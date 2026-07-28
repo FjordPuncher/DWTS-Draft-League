@@ -45,7 +45,7 @@
   .brand-lockup{position:relative;}
   .chrome-line{
     font-family:'Fredoka',sans-serif;font-weight:700;
-    font-size:1.9rem;line-height:1.05;letter-spacing:0.005em;
+    font-size:clamp(1.15rem, 6vw, 1.9rem);line-height:1.05;letter-spacing:0.005em;
     text-transform:uppercase;margin:0;
     background:linear-gradient(180deg,#eef1f4 0%, #ffffff 10%, #9a9ea6 28%, #4b4e56 46%, #7d818a 60%, #e3e6ea 78%, #ffffff 88%, #6d7078 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -54,9 +54,10 @@
   }
   .gold-line{
     font-family:'Fredoka',sans-serif;font-weight:600;
-    font-size:1rem;letter-spacing:0.16em;text-transform:uppercase;margin-top:2px;
+    font-size:clamp(0.72rem, 3.2vw, 1rem);letter-spacing:0.16em;text-transform:uppercase;margin-top:2px;
     background:linear-gradient(120deg,var(--gold-soft),var(--gold) 50%,var(--rose-soft));
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    white-space:nowrap;
   }
   .sparkle{position:absolute;pointer-events:none;filter:drop-shadow(0 0 3px rgba(255,255,255,0.8));}
   .sparkle.sp1{top:-6px;right:-2px;}
@@ -211,19 +212,26 @@
 
   /* SETUP */
   .draft-grid{overflow-x:auto;}
-  table.draft-table{border-collapse:collapse;width:100%;font-size:0.82rem;}
+  table.draft-table{border-collapse:collapse;width:auto;min-width:100%;font-size:0.82rem;table-layout:auto;}
   table.draft-table th,table.draft-table td{
-    border:1px solid var(--line);padding:8px;text-align:center;
+    border:1px solid var(--line);padding:8px;text-align:center;white-space:nowrap;
   }
   table.draft-table th{background:var(--bg-panel-raised);color:var(--gold-soft);font-size:0.78rem;}
-  table.draft-table td.dname-cell{text-align:left;font-size:0.82rem;}
+  table.draft-table th.owner-col{min-width:170px;white-space:normal;}
+  table.draft-table td.dname-cell{text-align:left;font-size:0.82rem;white-space:normal;min-width:160px;}
   table.draft-table td.dname-cell .pname{color:var(--muted);display:block;font-size:0.74rem;}
   table.draft-table input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;}
   table.draft-table input.owner-name-input{
-    width:100%;background:none;border:none;color:var(--gold-soft);font-weight:700;
+    width:100%;min-width:0;background:none;border:none;color:var(--gold-soft);font-weight:700;
     text-align:center;font-size:0.85rem;font-family:'Inter';
   }
   table.draft-table input.owner-name-input:focus{outline:none;}
+  table.draft-table input.team-name-input{
+    width:100%;min-width:0;background:none;border:none;color:var(--cream);font-weight:500;
+    text-align:center;font-size:0.76rem;font-family:'Inter';margin-top:2px;
+  }
+  table.draft-table input.team-name-input::placeholder{color:var(--muted);}
+  table.draft-table input.team-name-input:focus{outline:none;}
 
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
   .warn{
@@ -564,7 +572,8 @@ function renderStandings(){
         <div class="standing-left">
           <div class="rank-badge">#${idx+1}</div>
           <div class="team-info">
-            <div class="team-name">${r.owner.name}</div>
+            <div class="team-name">${r.owner.teamName ? r.owner.teamName : r.owner.name}</div>
+            ${r.owner.teamName ? `<div class="owner-name">${r.owner.name}</div>` : ''}
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;">
@@ -786,12 +795,13 @@ function renderSetup(){
   const table = document.getElementById('draftTable');
   let html = '<tr><th style="text-align:left;">Dancer / Celebrity</th>';
   state.owners.forEach(o=>{
-    html += `<th>
+    html += `<th class="owner-col">
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
         <input type="color" value="${o.color||'#D4AF37'}" onchange="recolorOwner('${o.id}', this.value)" style="width:22px;height:22px;border:none;background:none;padding:0;cursor:pointer;">
         <input class="owner-name-input" value="${o.name}" onchange="renameOwner('${o.id}', this.value)">
         <button class="icon-btn" onclick="removeOwner('${o.id}')" title="Remove owner">&times;</button>
       </div>
+      <input class="team-name-input" placeholder="Team name" value="${o.teamName||''}" onchange="renameTeam('${o.id}', this.value)">
     </th>`;
   });
   html += '<th></th></tr>';
@@ -826,6 +836,10 @@ function toggleDraft(ownerId, dancerId, checked){
 function renameOwner(ownerId, name){
   const o = ownerById(ownerId);
   if(o){ o.name = name; saveState(); renderAll(); }
+}
+function renameTeam(ownerId, teamName){
+  const o = ownerById(ownerId);
+  if(o){ o.teamName = teamName; saveState(); renderAll(); }
 }
 function recolorOwner(ownerId, color){
   const o = ownerById(ownerId);

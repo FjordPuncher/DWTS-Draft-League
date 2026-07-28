@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dancing with the Stars Fantasy League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#14121B;
+    --bg-panel:#1E1B2E;
+    --bg-panel-raised:#262238;
+    --gold:#D4AF37;
+    --gold-soft:#E8CA6E;
+    --rose:#E0507A;
+    --rose-soft:#F0819E;
+    --cream:#F3EEE4;
+    --muted:#9A93AE;
+    --line:#332F47;
+    --danger:#E0507A;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, #201C2E 0%, var(--bg-deep) 55%);
+    color:var(--cream);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  a{color:inherit;}
+  .app{max-width:980px;margin:0 auto;padding:28px 20px 0;}
+
+  /* HEADER */
+  header.top{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    flex-wrap:wrap;gap:14px;
+    padding-bottom:22px;border-bottom:1px solid var(--line);
+    margin-bottom:22px;
+  }
+  .brand{display:flex;align-items:center;gap:16px;}
+  .brand svg.mark{flex-shrink:0;}
+  .brand-lockup{position:relative;}
+  .chrome-line{
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:1.9rem;line-height:1.05;letter-spacing:0.005em;
+    text-transform:uppercase;margin:0;
+    background:linear-gradient(180deg,#eef1f4 0%, #ffffff 10%, #9a9ea6 28%, #4b4e56 46%, #7d818a 60%, #e3e6ea 78%, #ffffff 88%, #6d7078 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 1px rgba(0,0,0,0.55));
+    white-space:nowrap;
+  }
+  .gold-line{
+    font-family:'Fredoka',sans-serif;font-weight:600;
+    font-size:1rem;letter-spacing:0.16em;text-transform:uppercase;margin-top:2px;
+    background:linear-gradient(120deg,var(--gold-soft),var(--gold) 50%,var(--rose-soft));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sparkle{position:absolute;pointer-events:none;filter:drop-shadow(0 0 3px rgba(255,255,255,0.8));}
+  .sparkle.sp1{top:-6px;right:-2px;}
+  .sparkle.sp2{bottom:8px;left:-10px;}
+  .season-display{
+    margin-top:8px;font-size:0.85rem;color:var(--muted);
+  }
+  .season-display span{color:var(--gold-soft);font-weight:600;}
+
+  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;}
+  nav.tabs button{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    padding:9px 16px;border-radius:999px;font-size:0.85rem;font-weight:600;
+    cursor:pointer;transition:all .15s ease;font-family:'Inter';letter-spacing:0.02em;
+  }
+  nav.tabs button:hover{border-color:var(--gold);color:var(--cream);}
+  nav.tabs button.active{
+    background:linear-gradient(120deg,var(--gold),var(--rose));
+    color:#1A1522;border-color:transparent;font-weight:700;
+  }
+
+  section.panel{display:none;animation:fadein .25s ease;}
+  section.panel.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  h2.section-title{
+    font-family:'Bebas Neue';font-size:1.5rem;letter-spacing:0.04em;
+    color:var(--gold-soft);margin:0 0 4px;
+  }
+  p.section-sub{color:var(--muted);font-size:0.88rem;margin:0 0 20px;}
+
+  /* CARDS */
+  .card{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:14px;
+  }
+
+  /* STANDINGS */
+  .standing-card{
+    position:relative;overflow:hidden;
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:12px;transition:border-color .2s ease;
+  }
+  .standing-card.rank-1{border-color:var(--gold);}
+  .standing-card.rank-1::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent 30%, rgba(212,175,55,0.10) 50%, transparent 70%);
+    background-size:220% 100%;
+    animation:sweep 5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{0%{background-position:180% 0;}100%{background-position:-40% 0;}}
+  .standing-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;cursor:pointer;gap:12px;position:relative;z-index:1;
+  }
+  .standing-left{display:flex;align-items:center;gap:14px;}
+  .rank-badge{
+    font-family:'Bebas Neue';font-size:1.4rem;color:var(--muted);
+    width:34px;text-align:center;
+  }
+  .rank-1 .rank-badge{color:var(--gold);}
+  .team-info .team-name{font-weight:700;font-size:1.05rem;}
+  .team-info .owner-name{color:var(--muted);font-size:0.82rem;}
+  .standing-score{font-family:'Bebas Neue';font-size:1.9rem;color:var(--gold-soft);letter-spacing:0.02em;}
+  .rank-1 .standing-score{color:var(--gold);}
+  .chevron{color:var(--muted);transition:transform .2s ease;font-size:0.8rem;}
+  .standing-card.open .chevron{transform:rotate(180deg);}
+  .standing-detail{
+    display:none;padding:0 20px 18px;position:relative;z-index:1;
+  }
+  .standing-card.open .standing-detail{display:block;}
+  table.breakdown{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  table.breakdown th{
+    text-align:left;color:var(--muted);font-weight:600;font-size:0.72rem;
+    text-transform:uppercase;letter-spacing:0.04em;padding:6px 8px;border-bottom:1px solid var(--line);
+  }
+  table.breakdown td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.04);}
+  table.breakdown tr:last-child td{border-bottom:none;}
+  .pts-pos{color:var(--gold-soft);font-weight:700;}
+  .pts-neg{color:var(--rose);font-weight:700;}
+  .empty-note{color:var(--muted);font-size:0.85rem;font-style:italic;padding:8px 0;}
+
+  /* FORMS */
+  label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.02em;text-transform:uppercase;}
+  select,input[type=text],input[type=number]{
+    background:var(--bg-panel-raised);border:1px solid var(--line);color:var(--cream);
+    border-radius:6px;padding:9px 11px;font-size:0.92rem;font-family:'Inter';width:100%;
+  }
+  select:focus,input:focus{outline:none;border-color:var(--gold);}
+  .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+  .row > div{flex:1;min-width:160px;}
+
+  .dancer-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media(min-width:640px){.dancer-grid{grid-template-columns:1fr 1fr;}}
+  .dancer-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bg-panel-raised);border:1px solid var(--line);border-radius:8px;padding:9px 12px;
+  }
+  .dancer-row .dname{font-size:0.88rem;}
+  .dancer-row .dname .pname{color:var(--muted);font-size:0.78rem;display:block;}
+  .owner-badges{margin-top:5px;display:flex;gap:5px;flex-wrap:wrap;}
+  .owner-badge{
+    display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.02em;
+    padding:1px 8px;border-radius:999px;
+  }
+  .stepper{display:flex;align-items:center;gap:8px;}
+  .stepper button{
+    width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--bg-deep);
+    color:var(--cream);font-size:1rem;cursor:pointer;line-height:1;
+  }
+  .stepper button:hover{border-color:var(--gold);}
+  .stepper span{min-width:16px;text-align:center;font-weight:700;}
+
+  button.primary{
+    background:linear-gradient(120deg,var(--gold),var(--rose));border:none;color:#1A1522;
+    font-weight:700;padding:11px 22px;border-radius:8px;cursor:pointer;font-size:0.92rem;
+    letter-spacing:0.02em;
+  }
+  button.primary:hover{filter:brightness(1.08);}
+  button.secondary{
+    background:transparent;border:1px solid var(--line);color:var(--cream);
+    padding:10px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem;
+  }
+  button.secondary:hover{border-color:var(--gold);}
+  button.ghost{
+    background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;
+    text-decoration:underline;padding:2px 0;
+  }
+  button.ghost:hover{color:var(--rose);}
+  button.icon-btn{
+    background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;
+    width:28px;height:28px;cursor:pointer;font-size:0.85rem;
+  }
+  button.icon-btn:hover{border-color:var(--rose);color:var(--rose);}
+
+  /* EVENT LOG TABLE */
+  table.log-table{width:100%;border-collapse:collapse;font-size:0.86rem;}
+  table.log-table th{
+    text-align:left;color:var(--muted);font-weight:600;font-size:0.72rem;
+    text-transform:uppercase;letter-spacing:0.04em;padding:8px;border-bottom:1px solid var(--line);
+  }
+  table.log-table td{padding:9px 8px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;}
+  .week-pill{
+    display:inline-block;background:var(--bg-panel-raised);border:1px solid var(--line);
+    border-radius:999px;padding:2px 10px;font-size:0.75rem;color:var(--muted);
+  }
+  .owner-chip{
+    display:inline-block;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.35);
+    color:var(--gold-soft);border-radius:999px;padding:1px 9px;font-size:0.72rem;margin:1px 3px 1px 0;
+  }
+
+  /* SETUP */
+  .draft-grid{overflow-x:auto;}
+  table.draft-table{border-collapse:collapse;width:100%;font-size:0.82rem;}
+  table.draft-table th,table.draft-table td{
+    border:1px solid var(--line);padding:8px;text-align:center;
+  }
+  table.draft-table th{background:var(--bg-panel-raised);color:var(--gold-soft);font-size:0.78rem;}
+  table.draft-table td.dname-cell{text-align:left;font-size:0.82rem;}
+  table.draft-table td.dname-cell .pname{color:var(--muted);display:block;font-size:0.74rem;}
+  table.draft-table input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;}
+  table.draft-table input.owner-name-input{
+    width:100%;background:none;border:none;color:var(--gold-soft);font-weight:700;
+    text-align:center;font-size:0.85rem;font-family:'Inter';
+  }
+  table.draft-table input.owner-name-input:focus{outline:none;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .warn{
+    background:rgba(224,80,122,0.1);border:1px solid rgba(224,80,122,0.35);color:var(--rose-soft);
+    padding:9px 13px;border-radius:8px;font-size:0.82rem;margin-bottom:14px;
+  }
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--bg-panel-raised);border:1px solid var(--gold);color:var(--cream);
+    padding:10px 20px;border-radius:999px;font-size:0.85rem;box-shadow:0 6px 24px rgba(0,0,0,0.4);
+    opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:50;
+  }
+  .toast.show{opacity:1;}
+
+  .cat-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+  .cat-row:last-child{border-bottom:none;}
+  .cat-row .cat-label{flex:1;font-size:0.88rem;}
+  .cat-row input[type=checkbox]{accent-color:var(--gold);width:16px;height:16px;}
+  .cat-row input.pt-input{width:70px;text-align:right;}
+  .footer-note{color:var(--muted);font-size:0.78rem;text-align:center;margin-top:36px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-text">
+        <div class="brand-lockup">
+          <p class="chrome-line">Dancing with the Stars</p>
+          <p class="gold-line">Fantasy League</p>
+          <svg class="sparkle sp1" width="16" height="16" viewBox="0 0 24 24"><path d="M12 0 L14.2 9.8 L24 12 L14.2 14.2 L12 24 L9.8 14.2 L0 12 L9.8 9.8 Z" fill="#ffffff"/></svg>
+          <svg class="sparkle sp2" width="11" height="11" viewBox="0 0 24 24"><path d="M12 0 L14.2 9.8 L24 12 L14.2 14.2 L12 24 L9.8 14.2 L0 12 L9.8 9.8 Z" fill="#E8CA6E"/></svg>
+        </div>
+        <div class="season-display" id="seasonDisplay"><span id="seasonDisplayValue"></span></div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button data-tab="standings" class="active">Standings</button>
+      <button data-tab="log">Scoring</button>
+      <button data-tab="events">Score History</button>
+      <button data-tab="setup">Cast &amp; Teams</button>
+      <button data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <!-- STANDINGS -->
+  <section class="panel active" id="tab-standings">
+    <h2 class="section-title">Standings</h2>
+    <p class="section-sub">Tap a team to see exactly which dancer, week, and category every point came from.</p>
+    <div id="standingsList"></div>
+  </section>
+
+  <!-- LOG EVENT -->
+  <section class="panel" id="tab-log">
+    <h2 class="section-title">Log an Achievement</h2>
+    <p class="section-sub">Pick the category and week, then set how many times each dancer hit it this week.</p>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="logWeek">Week</label>
+          <input type="number" id="logWeek" min="1" value="1">
+        </div>
+        <div style="flex:2;">
+          <label for="logCategory">Category</label>
+          <select id="logCategory"></select>
+        </div>
+      </div>
+      <div id="logWarn"></div>
+      <label>Dancers who earned it this week (0 = didn't earn it, 2+ = earned it twice that night)</label>
+      <div class="dancer-grid" id="logDancerGrid"></div>
+      <div class="row" style="margin-top:16px;">
+        <div>
+          <label for="logNote">Note (optional)</label>
+          <input type="text" id="logNote" placeholder="Auto-filled from dancers picked, edit if you like">
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="primary" onclick="addEvent()">Add Event</button>
+      </div>
+    </div>
+    <h2 class="section-title" style="margin-top:28px;">Logged this week</h2>
+    <div id="thisWeekList"></div>
+  </section>
+
+  <!-- ALL EVENTS -->
+  <section class="panel" id="tab-events">
+    <h2 class="section-title">Score History</h2>
+    <p class="section-sub">The full season log &mdash; the single source of truth every standing is computed from.</p>
+    <div class="row" style="margin-bottom:10px;">
+      <div>
+        <label for="filterWeek">Filter by Week</label>
+        <select id="filterWeek" onchange="renderAllEvents()"><option value="all">All weeks</option></select>
+      </div>
+      <div>
+        <label for="filterDancer">Filter by Dancer</label>
+        <select id="filterDancer" onchange="renderAllEvents()"><option value="all">All dancers</option></select>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="log-table" id="allEventsTable">
+        <thead><tr><th>Week</th><th>Category</th><th>Dancer / Celebrity</th><th>Owners Credited</th><th>Pts Each</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="empty-note" id="allEventsEmpty" style="display:none;">No events logged yet. Head to "Scoring" to get started.</p>
+  </section>
+
+  <!-- SETUP -->
+  <section class="panel" id="tab-setup">
+    <h2 class="section-title">Cast &amp; Teams</h2>
+    <p class="section-sub">Edit dancers, owners, and who drafted whom. Check two boxes for a shared dancer.</p>
+    <div class="toolbar" style="margin-top:0;margin-bottom:16px;">
+      <button class="secondary" onclick="addDancer()">+ Add Dancer</button>
+      <button class="secondary" onclick="addOwner()">+ Add Owner</button>
+    </div>
+    <div class="card draft-grid">
+      <table class="draft-table" id="draftTable"></table>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="panel" id="tab-settings">
+    <h2 class="section-title">Season</h2>
+    <p class="section-sub">Set which season you're currently scoring. This is what shows in the header.</p>
+    <div class="card">
+      <div class="row" style="margin-bottom:0;">
+        <div>
+          <label for="seasonSelect">Season</label>
+          <select id="seasonSelect" onchange="onSeasonSelectChange()"></select>
+        </div>
+        <div id="customSeasonWrap" style="display:none;">
+          <label for="customSeasonInput">Custom Season Name</label>
+          <input type="text" id="customSeasonInput" placeholder="e.g. Season 35" onchange="onCustomSeasonChange()">
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:28px;">Scoring Categories</h2>
+    <p class="section-sub">Point values and which categories are active this season. Uncheck to retire one without losing past history.</p>
+    <div class="toolbar" style="margin-top:0;margin-bottom:16px;">
+      <button class="secondary" onclick="addCategory()">+ Add Category</button>
+    </div>
+    <div class="card" id="categoryList"></div>
+
+    <h2 class="section-title" style="margin-top:32px;">Data</h2>
+    <p class="section-sub">This app stores everything in your browser. Export a backup after big scoring sessions, or before starting a new season.</p>
+    <div class="toolbar">
+      <button class="secondary" onclick="exportData()">Export Backup (JSON)</button>
+      <button class="secondary" onclick="exportLeaderboardData()">Export for Leaderboard (leaderboard-data.json)</button>
+      <button class="secondary" onclick="document.getElementById('importFile').click()">Import Backup</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+      <button class="secondary" onclick="archiveSeason()">Archive Season &amp; Start Fresh</button>
+      <button class="ghost" onclick="if(confirm('Wipe ALL data? This cannot be undone.')) wipeAll();">Wipe all data</button>
+    </div>
+  </section>
+
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- DEFAULT SEED DATA ---------- */
+const DEFAULT_STATE = {
+  seasonName: "Season 34",
+  dancers: [],
+  owners: [
+    {id:"o1",name:"Piper",color:"#D4AF37"},
+    {id:"o2",name:"Kelly",color:"#E0507A"},
+    {id:"o3",name:"Sam",color:"#5BA3D0"},
+    {id:"o4",name:"Linda",color:"#7FB069"},
+    {id:"o5",name:"Peter",color:"#B98FDB"}
+  ],
+  draft: [],
+  categories: [
+    {id:"c1",label:"First 8",points:3,enabled:true},
+    {id:"c2",label:"First 9",points:5,enabled:true},
+    {id:"c3",label:"First 10",points:10,enabled:true},
+    {id:"c4",label:"First Straight 8s",points:10,enabled:true},
+    {id:"c5",label:"First Straight 9s",points:15,enabled:true},
+    {id:"c6",label:"First Perfect Score",points:20,enabled:true},
+    {id:"c7",label:"Overall 1st Place",points:75,enabled:true},
+    {id:"c8",label:"Overall 2nd Place",points:50,enabled:true},
+    {id:"c9",label:"Overall 3rd Place",points:25,enabled:true},
+    {id:"c10",label:"Overall 4th Place",points:15,enabled:true},
+    {id:"c11",label:"First Team to Lose a Dancer",points:2,enabled:true},
+    {id:"c12",label:"First Time your Dancer is Saved by a Judge",points:2,enabled:true},
+    {id:"c13",label:"Last Team to have all 4 Dancers",points:10,enabled:true},
+    {id:"c14",label:"Highest Total Score (weekly)",points:15,enabled:true},
+    {id:"c15",label:"2nd Highest Total Score (weekly)",points:10,enabled:true},
+    {id:"c16",label:"3rd Highest Total Score (weekly)",points:5,enabled:true},
+    {id:"c17",label:"Any Perfect Score After the 1st",points:5,enabled:true},
+    {id:"c18",label:"Weekly 1st Place",points:5,enabled:true},
+    {id:"c19",label:"Dancer or Pro gets COVID (penalty)",points:-5,enabled:true}
+  ],
+  events: [],
+  pastSeasons: []
+};
+
+const STORAGE_KEY = "dwts_fantasy_ledger_v1";
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.error("Load failed", e); }
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function uid(prefix){ return prefix + Math.random().toString(36).slice(2,9); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ---------- HELPERS ---------- */
+function dancerById(id){ return state.dancers.find(d=>d.id===id); }
+function ownerById(id){ return state.owners.find(o=>o.id===id); }
+function categoryById(id){ return state.categories.find(c=>c.id===id); }
+function ownersForDancer(dancerId){
+  return state.draft.filter(d=>d.dancerId===dancerId).map(d=>d.ownerId);
+}
+function dancerLabel(id){
+  const d = dancerById(id);
+  return d ? d.name + " / " + d.partner : "(unknown dancer)";
+}
+
+/* Flatten events into individual scoring instances for computation */
+function allInstances(){
+  const out = [];
+  state.events.forEach(ev=>{
+    const cat = categoryById(ev.categoryId);
+    if(!cat) return;
+    ev.instances.forEach(inst=>{
+      const owners = ownersForDancer(inst.dancerId);
+      owners.forEach(ownerId=>{
+        out.push({
+          eventId: ev.id, week: ev.week, categoryId: ev.categoryId,
+          categoryLabel: cat.label, points: cat.points, enabled: cat.enabled,
+          dancerId: inst.dancerId, ownerId
+        });
+      });
+    });
+  });
+  return out;
+}
+
+function ownerTotal(ownerId){
+  return allInstances().filter(i=>i.ownerId===ownerId && i.enabled!==false)
+    .reduce((sum,i)=>sum+i.points,0);
+}
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    renderAll();
+  });
+});
+
+function seasonPresetList(){
+  const presets = [];
+  for(let i=1;i<=45;i++) presets.push('Season '+i);
+  const archived = (state.pastSeasons||[]).map(s=>s.seasonName).filter(Boolean);
+  archived.forEach(name=>{ if(!presets.includes(name)) presets.push(name); });
+  return presets;
+}
+function renderSeasonSelect(){
+  const sel = document.getElementById('seasonSelect');
+  const presets = seasonPresetList();
+  const current = state.seasonName || '';
+  const isPreset = presets.includes(current);
+  sel.innerHTML = presets.map(p=>`<option value="${p}">${p}</option>`).join('') + `<option value="__custom__">Custom&hellip;</option>`;
+  if(isPreset){
+    sel.value = current;
+    document.getElementById('customSeasonWrap').style.display = 'none';
+  }else{
+    sel.value = '__custom__';
+    document.getElementById('customSeasonWrap').style.display = 'block';
+    document.getElementById('customSeasonInput').value = current;
+  }
+}
+function onSeasonSelectChange(){
+  const sel = document.getElementById('seasonSelect');
+  if(sel.value === '__custom__'){
+    document.getElementById('customSeasonWrap').style.display = 'block';
+    document.getElementById('customSeasonInput').focus();
+  }else{
+    document.getElementById('customSeasonWrap').style.display = 'none';
+    state.seasonName = sel.value;
+    saveState();
+    renderAll();
+  }
+}
+function onCustomSeasonChange(){
+  const val = document.getElementById('customSeasonInput').value.trim();
+  if(val){
+    state.seasonName = val;
+    saveState();
+    renderAll();
+  }
+}
+
+/* ---------- RENDER: STANDINGS ---------- */
+function renderStandings(){
+  const container = document.getElementById('standingsList');
+  const rows = state.owners.map(o=>({owner:o, total: ownerTotal(o.id)}))
+    .sort((a,b)=>b.total-a.total);
+
+  container.innerHTML = rows.map((r,idx)=>{
+    const rankClass = idx===0 ? 'rank-1' : '';
+    const detail = allInstances()
+      .filter(i=>i.ownerId===r.owner.id && i.enabled!==false)
+      .sort((a,b)=>a.week-b.week);
+    const detailRows = detail.length ? detail.map(i=>{
+      const d = dancerById(i.dancerId);
+      const cls = i.points>=0 ? 'pts-pos':'pts-neg';
+      return `<tr>
+        <td><span class="week-pill">Wk ${i.week}</span></td>
+        <td>${i.categoryLabel}</td>
+        <td>${d ? d.name : '?'} <span style="color:var(--muted);">/ ${d ? d.partner:'?'}</span></td>
+        <td class="${cls}">${i.points>0?'+':''}${i.points}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="4" class="empty-note">No points logged yet for this team.</td></tr>`;
+
+    return `<div class="standing-card ${rankClass}" id="card-${r.owner.id}">
+      <div class="standing-head" onclick="toggleCard('${r.owner.id}')">
+        <div class="standing-left">
+          <div class="rank-badge">#${idx+1}</div>
+          <div class="team-info">
+            <div class="team-name">${r.owner.name}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="standing-score">${r.total}</div>
+          <div class="chevron">&#9660;</div>
+        </div>
+      </div>
+      <div class="standing-detail">
+        <table class="breakdown">
+          <thead><tr><th>Week</th><th>Category</th><th>Dancer / Celebrity</th><th>Pts</th></tr></thead>
+          <tbody>${detailRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleCard(ownerId){
+  document.getElementById('card-'+ownerId).classList.toggle('open');
+}
+
+/* ---------- RENDER: LOG EVENT ---------- */
+function renderLogForm(){
+  const catSel = document.getElementById('logCategory');
+  catSel.innerHTML = state.categories.filter(c=>c.enabled!==false).map(c=>
+    `<option value="${c.id}">${c.label} (${c.points>0?'+':''}${c.points})</option>`
+  ).join('');
+
+  renderDancerGrid();
+  renderThisWeekList();
+}
+
+let logQuantities = {}; // dancerId -> quantity for the current draft form
+
+function ownerBadgesFor(dancerId){
+  const owners = ownersForDancer(dancerId).map(ownerById).filter(Boolean);
+  if(owners.length===0) return `<span style="color:var(--muted);font-size:0.72rem;">undrafted</span>`;
+  return owners.map(o=>{
+    const bg = o.color || '#D4AF37';
+    return `<span class="owner-badge" style="background:${bg};color:${contrastText(bg)};">${o.name}</span>`;
+  }).join('');
+}
+function renderDancerGrid(){
+  const grid = document.getElementById('logDancerGrid');
+  grid.innerHTML = state.dancers.map(d=>{
+    const q = logQuantities[d.id] || 0;
+    return `<div class="dancer-row">
+      <div class="dname">
+        ${d.name}<span class="pname">${d.partner}</span>
+        <div class="owner-badges">${ownerBadgesFor(d.id)}</div>
+      </div>
+      <div class="stepper">
+        <button type="button" onclick="stepDancer('${d.id}',-1)">&minus;</button>
+        <span id="qty-${d.id}">${q}</span>
+        <button type="button" onclick="stepDancer('${d.id}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function stepDancer(dancerId, delta){
+  const cur = logQuantities[dancerId] || 0;
+  const next = Math.max(0, cur+delta);
+  logQuantities[dancerId] = next;
+  document.getElementById('qty-'+dancerId).textContent = next;
+  updateAutoNote();
+}
+function updateAutoNote(){
+  const noteField = document.getElementById('logNote');
+  if(noteField.dataset.userEdited === "true") return;
+  const parts = [];
+  Object.keys(logQuantities).forEach(id=>{
+    const q = logQuantities[id];
+    if(q>0){
+      const d = dancerById(id);
+      for(let i=0;i<q;i++) parts.push(d.name+"/"+d.partner);
+    }
+  });
+  noteField.value = parts.join(", ");
+}
+document.getElementById('logNote').addEventListener('input', (e)=>{
+  e.target.dataset.userEdited = "true";
+});
+
+document.getElementById('logCategory').addEventListener('change', checkDuplicateWarning);
+document.getElementById('logWeek').addEventListener('input', checkDuplicateWarning);
+
+function checkDuplicateWarning(){
+  const catId = document.getElementById('logCategory').value;
+  const cat = categoryById(catId);
+  const warnBox = document.getElementById('logWarn');
+  if(!cat){ warnBox.innerHTML=""; return; }
+  const isFirstType = /^First /.test(cat.label);
+  if(isFirstType){
+    const already = state.events.some(ev=>ev.categoryId===catId);
+    if(already){
+      warnBox.innerHTML = `<div class="warn">Heads up &mdash; "${cat.label}" has already been logged once this season. Since it's a "first" category, double check this isn't a duplicate.</div>`;
+      return;
+    }
+  }
+  warnBox.innerHTML = "";
+}
+
+function addEvent(){
+  const week = parseInt(document.getElementById('logWeek').value,10) || 1;
+  const categoryId = document.getElementById('logCategory').value;
+  const note = document.getElementById('logNote').value.trim();
+  const instances = [];
+  Object.keys(logQuantities).forEach(id=>{
+    const q = logQuantities[id];
+    for(let i=0;i<q;i++) instances.push({dancerId:id});
+  });
+  if(instances.length===0){
+    toast("Pick at least one dancer first");
+    return;
+  }
+  state.events.push({id:uid('e'), week, categoryId, instances, note});
+  saveState();
+  logQuantities = {};
+  document.getElementById('logNote').value = "";
+  document.getElementById('logNote').dataset.userEdited = "false";
+  renderAll();
+  toast("Event logged");
+}
+
+function renderThisWeekList(){
+  const week = parseInt(document.getElementById('logWeek').value,10) || 1;
+  const list = document.getElementById('thisWeekList');
+  const weekEvents = state.events.filter(e=>e.week===week);
+  if(weekEvents.length===0){
+    list.innerHTML = `<p class="empty-note">Nothing logged for week ${week} yet.</p>`;
+    return;
+  }
+  list.innerHTML = weekEvents.map(ev=>{
+    const cat = categoryById(ev.categoryId);
+    const dancerNames = ev.instances.map(i=>dancerLabel(i.dancerId)).join(", ");
+    return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <strong>${cat ? cat.label : '?'}</strong><br>
+        <span style="color:var(--muted);font-size:0.85rem;">${dancerNames}</span>
+      </div>
+      <button class="icon-btn" onclick="deleteEvent('${ev.id}')" title="Delete">&times;</button>
+    </div>`;
+  }).join('');
+}
+document.getElementById('logWeek').addEventListener('input', renderThisWeekList);
+
+function deleteEvent(eventId){
+  state.events = state.events.filter(e=>e.id!==eventId);
+  saveState();
+  renderAll();
+  toast("Event removed");
+}
+
+/* ---------- RENDER: ALL EVENTS ---------- */
+function populateEventFilters(){
+  const weekSel = document.getElementById('filterWeek');
+  const dancerSel = document.getElementById('filterDancer');
+  const curWeek = weekSel.value;
+  const curDancer = dancerSel.value;
+
+  const weeks = [...new Set(state.events.map(e=>e.week))].sort((a,b)=>a-b);
+  weekSel.innerHTML = '<option value="all">All weeks</option>' +
+    weeks.map(w=>`<option value="${w}">Week ${w}</option>`).join('');
+  weekSel.value = weeks.includes(parseInt(curWeek,10)) ? curWeek : 'all';
+
+  dancerSel.innerHTML = '<option value="all">All dancers</option>' +
+    state.dancers.map(d=>`<option value="${d.id}">${d.name} / ${d.partner}</option>`).join('');
+  dancerSel.value = state.dancers.some(d=>d.id===curDancer) ? curDancer : 'all';
+}
+
+function renderAllEvents(){
+  populateEventFilters();
+  const weekFilter = document.getElementById('filterWeek').value;
+  const dancerFilter = document.getElementById('filterDancer').value;
+
+  const tbody = document.querySelector('#allEventsTable tbody');
+  const empty = document.getElementById('allEventsEmpty');
+
+  let sorted = [...state.events].sort((a,b)=>a.week-b.week);
+  if(weekFilter !== 'all'){
+    sorted = sorted.filter(e=>e.week === parseInt(weekFilter,10));
+  }
+  if(dancerFilter !== 'all'){
+    sorted = sorted.filter(e=>e.instances.some(i=>i.dancerId===dancerFilter));
+  }
+
+  if(sorted.length===0){
+    tbody.innerHTML = "";
+    empty.style.display = "block";
+    empty.textContent = state.events.length===0
+      ? "No events logged yet. Head to \"Scoring\" to get started."
+      : "No events match this filter.";
+    return;
+  }
+  empty.style.display = "none";
+  tbody.innerHTML = sorted.map(ev=>{
+    const cat = categoryById(ev.categoryId);
+    let instances = ev.instances;
+    if(dancerFilter !== 'all'){
+      instances = instances.filter(i=>i.dancerId===dancerFilter);
+    }
+    const rowsPerInstance = instances.map(inst=>{
+      const owners = ownersForDancer(inst.dancerId).map(oid=>ownerById(oid)).filter(Boolean);
+      const chips = owners.length ? owners.map(o=>`<span class="owner-badge" style="background:${o.color||'#D4AF37'};color:${contrastText(o.color)};">${o.name}</span>`).join(' ') : `<span style="color:var(--muted);">unowned</span>`;
+      return `<tr>
+        <td><span class="week-pill">Wk ${ev.week}</span></td>
+        <td>${cat ? cat.label : '?'}</td>
+        <td>${dancerLabel(inst.dancerId)}</td>
+        <td>${chips}</td>
+        <td class="${cat && cat.points<0?'pts-neg':'pts-pos'}">${cat ? (cat.points>0?'+':'')+cat.points : '?'}</td>
+        <td><button class="icon-btn" onclick="deleteEvent('${ev.id}')" title="Delete event">&times;</button></td>
+      </tr>`;
+    }).join('');
+    return rowsPerInstance;
+  }).join('');
+}
+
+/* ---------- RENDER: SETUP (CAST & DRAFT) ---------- */
+function renderSetup(){
+  const table = document.getElementById('draftTable');
+  let html = '<tr><th style="text-align:left;">Dancer / Celebrity</th>';
+  state.owners.forEach(o=>{
+    html += `<th>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+        <input type="color" value="${o.color||'#D4AF37'}" onchange="recolorOwner('${o.id}', this.value)" style="width:22px;height:22px;border:none;background:none;padding:0;cursor:pointer;">
+        <input class="owner-name-input" value="${o.name}" onchange="renameOwner('${o.id}', this.value)">
+        <button class="icon-btn" onclick="removeOwner('${o.id}')" title="Remove owner">&times;</button>
+      </div>
+    </th>`;
+  });
+  html += '<th></th></tr>';
+
+  state.dancers.forEach(d=>{
+    html += `<tr><td class="dname-cell">${d.name}<span class="pname">${d.partner}</span></td>`;
+    state.owners.forEach(o=>{
+      const checked = state.draft.some(x=>x.ownerId===o.id && x.dancerId===d.id) ? 'checked' : '';
+      html += `<td><input type="checkbox" ${checked} onchange="toggleDraft('${o.id}','${d.id}', this.checked)"></td>`;
+    });
+    html += `<td><button class="icon-btn" onclick="removeDancer('${d.id}')" title="Remove dancer">&times;</button></td></tr>`;
+  });
+  table.innerHTML = html;
+}
+function toggleDraft(ownerId, dancerId, checked){
+  if(checked){
+    if(!state.draft.some(x=>x.ownerId===ownerId && x.dancerId===dancerId)){
+      const existingOwners = ownersForDancer(dancerId);
+      if(existingOwners.length>=2){
+        toast("That dancer is already drafted by two owners");
+        renderSetup();
+        return;
+      }
+      state.draft.push({ownerId,dancerId});
+    }
+  }else{
+    state.draft = state.draft.filter(x=>!(x.ownerId===ownerId && x.dancerId===dancerId));
+  }
+  saveState();
+  renderAll();
+}
+function renameOwner(ownerId, name){
+  const o = ownerById(ownerId);
+  if(o){ o.name = name; saveState(); renderAll(); }
+}
+function recolorOwner(ownerId, color){
+  const o = ownerById(ownerId);
+  if(o){ o.color = color; saveState(); renderAll(); }
+}
+function removeOwner(ownerId){
+  const o = ownerById(ownerId);
+  if(!o) return;
+  if(!confirm(`Remove "${o.name}" as an owner? Their draft picks will be cleared, and any past events crediting them will no longer count toward a team.`)) return;
+  state.owners = state.owners.filter(x=>x.id!==ownerId);
+  state.draft = state.draft.filter(x=>x.ownerId!==ownerId);
+  saveState();
+  renderAll();
+  toast(`${o.name} removed`);
+}
+function contrastText(hex){
+  if(!hex) return '#14121B';
+  const c = hex.replace('#','');
+  const r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+  const luminance = (0.299*r + 0.587*g + 0.114*b)/255;
+  return luminance > 0.55 ? '#14121B' : '#F3EEE4';
+}
+const PALETTE = ["#D4AF37","#E0507A","#5BA3D0","#7FB069","#B98FDB","#E8945A","#4FBFA8","#D06767"];
+function addDancer(){
+  const name = prompt("Dancer name:");
+  if(!name) return;
+  const partner = prompt("Celebrity / Pro partner name:") || "";
+  state.dancers.push({id:uid('d'), name, partner});
+  saveState();
+  renderAll();
+}
+function removeDancer(dancerId){
+  if(!confirm("Remove this dancer? Any logged events referencing them will still show but won't credit anyone.")) return;
+  state.dancers = state.dancers.filter(d=>d.id!==dancerId);
+  state.draft = state.draft.filter(x=>x.dancerId!==dancerId);
+  saveState();
+  renderAll();
+}
+function addOwner(){
+  const name = prompt("Owner name:");
+  if(!name) return;
+  const color = PALETTE[state.owners.length % PALETTE.length];
+  state.owners.push({id:uid('o'), name, color});
+  saveState();
+  renderAll();
+}
+
+/* ---------- RENDER: SETTINGS / CATEGORIES ---------- */
+function renderCategories(){
+  const list = document.getElementById('categoryList');
+  list.innerHTML = state.categories.map(c=>`
+    <div class="cat-row">
+      <input type="checkbox" ${c.enabled!==false?'checked':''} onchange="toggleCategory('${c.id}', this.checked)">
+      <input type="text" class="cat-label" style="flex:1;background:none;border:none;color:var(--cream);font-size:0.88rem;" value="${c.label}" onchange="renameCategory('${c.id}', this.value)">
+      <input type="number" class="pt-input" value="${c.points}" onchange="repointCategory('${c.id}', this.value)">
+    </div>
+  `).join('');
+}
+function toggleCategory(id, checked){
+  const c = categoryById(id); if(c){ c.enabled = checked; saveState(); renderAll(); }
+}
+function renameCategory(id, label){
+  const c = categoryById(id); if(c){ c.label = label; saveState(); renderAll(); }
+}
+function repointCategory(id, val){
+  const c = categoryById(id); if(c){ c.points = parseFloat(val)||0; saveState(); renderAll(); }
+}
+function addCategory(){
+  const label = prompt("Category name:");
+  if(!label) return;
+  const points = parseFloat(prompt("Point value (use a negative number for penalties):","5")) || 0;
+  state.categories.push({id:uid('c'), label, points, enabled:true});
+  saveState();
+  renderAll();
+}
+
+/* ---------- DATA: EXPORT / IMPORT / ARCHIVE / WIPE ---------- */
+function exportData(){
+  const payload = Object.assign({}, state, {exportedAt: new Date().toISOString()});
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = (state.seasonName||'season').replace(/[^a-z0-9]+/gi,'_').toLowerCase();
+  a.href = url;
+  a.download = `mirrorball-ledger-${safeName}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Backup downloaded");
+}
+function exportLeaderboardData(){
+  const payload = Object.assign({}, state, {exportedAt: new Date().toISOString()});
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "leaderboard-data.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("leaderboard-data.json downloaded \u2014 drop it next to leaderboard.html");
+}
+function importData(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed.dancers || !parsed.owners){ throw new Error("not a valid backup"); }
+      state = parsed;
+      saveState();
+      renderAll();
+      toast("Backup imported");
+    }catch(err){
+      alert("That file doesn't look like a valid backup for this app.");
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = "";
+}
+function archiveSeason(){
+  if(!confirm(`Archive "${state.seasonName}" and clear the event log for a new season? Cast, teams, and categories stay as-is.`)) return;
+  state.pastSeasons = state.pastSeasons || [];
+  state.pastSeasons.push({
+    seasonName: state.seasonName,
+    events: state.events,
+    dancers: state.dancers,
+    draft: state.draft,
+    archivedAt: new Date().toISOString()
+  });
+  state.events = [];
+  saveState();
+  renderAll();
+  toast("Season archived. Event log cleared for the new season.");
+}
+function wipeAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  saveState();
+  renderAll();
+  toast("All data wiped");
+}
+
+/* ---------- MASTER RENDER ---------- */
+function renderAll(){
+  document.getElementById('seasonDisplayValue').textContent = state.seasonName || "";
+  renderSeasonSelect();
+  renderStandings();
+  renderLogForm();
+  renderAllEvents();
+  renderSetup();
+  renderCategories();
+}
+renderAll();
+</script>
+</body>
+</html>

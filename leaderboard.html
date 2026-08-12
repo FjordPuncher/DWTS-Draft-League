@@ -38,7 +38,7 @@
   .brand-lockup{position:relative;}
   .chrome-line{
     font-family:'Fredoka',sans-serif;font-weight:700;
-    font-size:clamp(1.05rem, 5.5vw, 1.7rem);line-height:1.05;letter-spacing:0.005em;text-transform:uppercase;margin:0;
+    font-size:clamp(1.15rem, 6vw, 1.9rem);line-height:1.05;letter-spacing:0.005em;text-transform:uppercase;margin:0;
     background:linear-gradient(180deg,#eef1f4 0%, #ffffff 10%, #9a9ea6 28%, #4b4e56 46%, #7d818a 60%, #e3e6ea 78%, #ffffff 88%, #6d7078 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 2px 1px rgba(0,0,0,0.55));
@@ -85,6 +85,10 @@
   .rank-1 .rank-badge{color:var(--gold);}
   .team-name{font-weight:700;font-size:1.05rem;}
   .owner-name{color:var(--muted);font-size:0.82rem;}
+  .card{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:14px;
+  }
   .standing-score{font-family:'Bebas Neue';font-size:1.9rem;color:var(--gold-soft);letter-spacing:0.02em;}
   .rank-1 .standing-score{color:var(--gold);}
   .chevron{color:var(--muted);transition:transform .2s ease;font-size:0.8rem;}
@@ -158,6 +162,12 @@
 
   <div id="standingsList"></div>
 
+  <div class="card" id="progressionChartCard" style="display:none;margin-top:8px;">
+    <div style="font-weight:700;margin-bottom:10px;font-size:0.95rem;">Score Progression</div>
+    <div id="progressionChartWrap"></div>
+    <div id="progressionLegend" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
+  </div>
+
   <p class="footer-note" id="footerNote" style="display:none;">Read-only view &middot; scores are logged in the main Mirrorball Ledger app</p>
 </div>
 
@@ -203,10 +213,107 @@ function allInstances(){
 function ownerTotal(ownerId){
   return allInstances().filter(i=>i.ownerId===ownerId && i.enabled!==false).reduce((s,i)=>s+i.points,0);
 }
+function ownerDisplayName(o){
+  if(!o) return '?';
+  return o.teamName ? o.teamName : o.name;
+}
+
+function renderProgressionChart(){
+  const card = document.getElementById('progressionChartCard');
+  const wrap = document.getElementById('progressionChartWrap');
+  const legend = document.getElementById('progressionLegend');
+  if(!card) return;
+
+  if(!data.events || data.events.length===0 || !data.owners || data.owners.length===0){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+
+  const maxWeek = Math.max(...data.events.map(e=>e.week));
+  const weeks = [0];
+  for(let w=1; w<=maxWeek; w++) weeks.push(w);
+
+  const series = {};
+  data.owners.forEach(o=>{
+    series[o.id] = weeks.map(w=>{
+      let total = 0;
+      allInstances().forEach(i=>{
+        if(i.enabled===false) return;
+        if(i.ownerId===o.id && i.week<=w) total += i.points;
+      });
+      return total;
+    });
+  });
+
+  let allVals = [0];
+  Object.values(series).forEach(arr=> allVals = allVals.concat(arr));
+  const maxVal = Math.max(...allVals, 1);
+  const minVal = Math.min(...allVals, 0);
+
+  const W = 640, H = 260, ML = 42, MR = 118, MT = 16, MB = 30;
+  const plotW = W - ML - MR, plotH = H - MT - MB;
+  const xFor = (idx) => ML + (weeks.length>1 ? idx/(weeks.length-1) : 0.5) * plotW;
+  const yBase = (val) => MT + plotH - ((val - minVal) / ((maxVal - minVal)||1)) * plotH;
+
+  const n = data.owners.length;
+  const staggerStep = 4.5;
+  const yFor = (val, idx) => yBase(val) + (idx - (n-1)/2) * staggerStep;
+
+  let gridLines = '';
+  const gridSteps = 4;
+  for(let g=0; g<=gridSteps; g++){
+    const val = minVal + (g/gridSteps)*(maxVal-minVal);
+    const y = yBase(val);
+    gridLines += `<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="var(--line)" stroke-width="1" />`;
+    gridLines += `<text x="${ML-8}" y="${y+3}" text-anchor="end" font-size="9" fill="var(--muted)">${Math.round(val)}</text>`;
+  }
+
+  let xLabels = '';
+  const labelEvery = weeks.length > 14 ? 2 : 1;
+  weeks.forEach((w,idx)=>{
+    if(idx % labelEvery !== 0 && idx !== weeks.length-1) return;
+    xLabels += `<text x="${xFor(idx)}" y="${H-8}" text-anchor="middle" font-size="9" fill="var(--muted)">${w}</text>`;
+  });
+
+  function truncateLabel(str){
+    return str.length > 16 ? str.slice(0,15) + '…' : str;
+  }
+
+  let lines = '';
+  let endLabels = '';
+  const lastIdx = weeks.length - 1;
+  data.owners.forEach((o, ownerIdx)=>{
+    const pts = series[o.id].map((v,idx)=>`${xFor(idx)},${yFor(v, ownerIdx)}`).join(' ');
+    const color = o.color || '#D4AF37';
+    lines += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.95" />`;
+    series[o.id].forEach((v,idx)=>{
+      lines += `<circle cx="${xFor(idx)}" cy="${yFor(v, ownerIdx)}" r="2.5" fill="${color}"><title>${ownerDisplayName(o)} — Wk ${weeks[idx]}: ${v}</title></circle>`;
+    });
+    const lastVal = series[o.id][lastIdx];
+    const lx = xFor(lastIdx) + 8;
+    const ly = yFor(lastVal, ownerIdx);
+    endLabels += `<text x="${lx}" y="${ly+3}" font-size="9.5" font-weight="700" fill="${color}">${truncateLabel(ownerDisplayName(o))}</text>`;
+  });
+  lines += endLabels;
+
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+    ${gridLines}${xLabels}${lines}
+  </svg>`;
+
+  legend.innerHTML = data.owners.map(o=>{
+    const color = o.color || '#D4AF37';
+    return `<span style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--muted);">
+      <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;"></span>
+      ${ownerDisplayName(o)}
+    </span>`;
+  }).join('');
+}
 
 function renderLeaderboard(){
   document.getElementById('loadState').style.display = 'none';
   document.getElementById('footerNote').style.display = 'block';
+  renderProgressionChart();
 
   const metaRow = document.getElementById('metaRow');
   metaRow.style.display = 'flex';

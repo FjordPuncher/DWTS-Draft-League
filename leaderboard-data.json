@@ -1,0 +1,313 @@
+{
+  "seasonName": "Season 35",
+  "dancers": [
+    {
+      "id": "dvq2ha4p",
+      "name": "Maura Higgins",
+      "partner": "Mark Ballas"
+    },
+    {
+      "id": "d8te96kh",
+      "name": "Ciara Miller",
+      "partner": "Brandon Armstrong"
+    },
+    {
+      "id": "dfr0eq4f",
+      "name": "Jackson Olson",
+      "partner": "Emma Slater"
+    },
+    {
+      "id": "d4zse6j0",
+      "name": "Guillermo Rodriguez",
+      "partner": "Witney Carson"
+    },
+    {
+      "id": "d5lmu5nk",
+      "name": "Giada De Laurentiis",
+      "partner": "Alan Bersten"
+    },
+    {
+      "id": "dul6ywtx",
+      "name": "Taylor Hanson",
+      "partner": "Britt Stewart"
+    },
+    {
+      "id": "dc53z0u7",
+      "name": "Jenna Dewan",
+      "partner": "Val Chmerkovskiy"
+    },
+    {
+      "id": "duk78r6o",
+      "name": "Harry Shum Jr.",
+      "partner": "Jenna Johnson"
+    },
+    {
+      "id": "d2ii8j2c",
+      "name": "Julia Stiles",
+      "partner": "Ezra Sosa"
+    },
+    {
+      "id": "dgcdpfaw",
+      "name": "Tyler Cameron",
+      "partner": "Sharna Burgess"
+    },
+    {
+      "id": "dgsgp7tm",
+      "name": "Tatyana Ali",
+      "partner": "Jan Ravnik"
+    },
+    {
+      "id": "d5fjv4eu",
+      "name": "Conner Leavitt",
+      "partner": "Adele Zaikman"
+    },
+    {
+      "id": "dynn7lax",
+      "name": "Sarah Jane Nader",
+      "partner": "Hailey Bills"
+    },
+    {
+      "id": "devcs1x1",
+      "name": "Amber Glenn",
+      "partner": "Pasha Pashkov"
+    },
+    {
+      "id": "d90d9z03",
+      "name": "Connor Wood",
+      "partner": "Rylee Arnold"
+    },
+    {
+      "id": "dae6qmea",
+      "name": "Ezra Frech",
+      "partner": "Daniella Karagach"
+    }
+  ],
+  "owners": [
+    {
+      "id": "o1",
+      "name": "Piper",
+      "color": "#D4AF37"
+    },
+    {
+      "id": "o2",
+      "name": "Kelly",
+      "color": "#E0507A"
+    },
+    {
+      "id": "o3",
+      "name": "Sam",
+      "color": "#5BA3D0"
+    },
+    {
+      "id": "o4",
+      "name": "Linda",
+      "color": "#7FB069"
+    },
+    {
+      "id": "o5",
+      "name": "Peter",
+      "color": "#B98FDB"
+    }
+  ],
+  "draft": [
+    {
+      "ownerId": "o5",
+      "dancerId": "dae6qmea"
+    },
+    {
+      "ownerId": "o2",
+      "dancerId": "dfr0eq4f"
+    },
+    {
+      "ownerId": "o4",
+      "dancerId": "dgsgp7tm"
+    },
+    {
+      "ownerId": "o3",
+      "dancerId": "devcs1x1"
+    },
+    {
+      "ownerId": "o1",
+      "dancerId": "duk78r6o"
+    },
+    {
+      "ownerId": "o1",
+      "dancerId": "dc53z0u7"
+    },
+    {
+      "ownerId": "o3",
+      "dancerId": "dynn7lax"
+    },
+    {
+      "ownerId": "o4",
+      "dancerId": "dgcdpfaw"
+    },
+    {
+      "ownerId": "o5",
+      "dancerId": "dul6ywtx"
+    },
+    {
+      "ownerId": "o2",
+      "dancerId": "d8te96kh"
+    },
+    {
+      "ownerId": "o5",
+      "dancerId": "dvq2ha4p"
+    },
+    {
+      "ownerId": "o2",
+      "dancerId": "d2ii8j2c"
+    },
+    {
+      "ownerId": "o4",
+      "dancerId": "d5fjv4eu"
+    },
+    {
+      "ownerId": "o3",
+      "dancerId": "d5lmu5nk"
+    },
+    {
+      "ownerId": "o1",
+      "dancerId": "d90d9z03"
+    },
+    {
+      "ownerId": "o1",
+      "dancerId": "d4zse6j0"
+    },
+    {
+      "ownerId": "o3",
+      "dancerId": "dfr0eq4f"
+    },
+    {
+      "ownerId": "o4",
+      "dancerId": "devcs1x1"
+    },
+    {
+      "ownerId": "o2",
+      "dancerId": "d5lmu5nk"
+    },
+    {
+      "ownerId": "o5",
+      "dancerId": "dc53z0u7"
+    }
+  ],
+  "categories": [
+    {
+      "id": "c1",
+      "label": "First 8",
+      "points": 3,
+      "enabled": true
+    },
+    {
+      "id": "c2",
+      "label": "First 9",
+      "points": 5,
+      "enabled": true
+    },
+    {
+      "id": "c3",
+      "label": "First 10",
+      "points": 10,
+      "enabled": true
+    },
+    {
+      "id": "c4",
+      "label": "First Straight 8s",
+      "points": 10,
+      "enabled": true
+    },
+    {
+      "id": "c5",
+      "label": "First Straight 9s",
+      "points": 15,
+      "enabled": true
+    },
+    {
+      "id": "c6",
+      "label": "First Perfect Score",
+      "points": 20,
+      "enabled": true
+    },
+    {
+      "id": "c7",
+      "label": "Overall 1st Place",
+      "points": 75,
+      "enabled": true
+    },
+    {
+      "id": "c8",
+      "label": "Overall 2nd Place",
+      "points": 50,
+      "enabled": true
+    },
+    {
+      "id": "c9",
+      "label": "Overall 3rd Place",
+      "points": 25,
+      "enabled": true
+    },
+    {
+      "id": "c10",
+      "label": "Overall 4th Place",
+      "points": 15,
+      "enabled": true
+    },
+    {
+      "id": "c11",
+      "label": "First Team to Lose a Dancer",
+      "points": 2,
+      "enabled": true
+    },
+    {
+      "id": "c12",
+      "label": "First Time your Dancer is Saved by a Judge",
+      "points": 2,
+      "enabled": true
+    },
+    {
+      "id": "c13",
+      "label": "Last Team to have all 4 Dancers",
+      "points": 10,
+      "enabled": true
+    },
+    {
+      "id": "c14",
+      "label": "Highest Total Score (weekly)",
+      "points": 15,
+      "enabled": true
+    },
+    {
+      "id": "c15",
+      "label": "2nd Highest Total Score (weekly)",
+      "points": 10,
+      "enabled": true
+    },
+    {
+      "id": "c16",
+      "label": "3rd Highest Total Score (weekly)",
+      "points": 5,
+      "enabled": true
+    },
+    {
+      "id": "c17",
+      "label": "Any Perfect Score After the 1st",
+      "points": 5,
+      "enabled": true
+    },
+    {
+      "id": "c18",
+      "label": "Weekly 1st Place",
+      "points": 5,
+      "enabled": true
+    },
+    {
+      "id": "c19",
+      "label": "Dancer or Pro gets COVID (penalty)",
+      "points": -5,
+      "enabled": true
+    }
+  ],
+  "events": [],
+  "pastSeasons": [],
+  "exportedAt": "2026-09-10T00:11:40.244Z"
+}

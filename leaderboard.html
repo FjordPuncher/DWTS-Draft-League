@@ -95,6 +95,18 @@
   .standing-card.open .chevron{transform:rotate(180deg);}
   .standing-detail{display:none;padding:0 20px 18px;position:relative;z-index:1;}
   .standing-card.open .standing-detail{display:block;}
+  .scores-heading{
+    font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.04em;color:var(--gold-soft);
+    margin:10px 0 6px;
+  }
+  .dancer-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media(min-width:640px){.dancer-grid{grid-template-columns:1fr 1fr;}}
+  .dancer-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bg-panel-raised);border:1px solid var(--line);border-radius:8px;padding:9px 12px;
+  }
+  .dancer-row .dname{font-size:0.88rem;}
+  .dancer-row .dname .pname{color:var(--muted);font-size:0.78rem;display:block;}
   table.breakdown{width:100%;border-collapse:collapse;font-size:0.85rem;}
   table.breakdown th{
     text-align:left;color:var(--muted);font-weight:600;font-size:0.72rem;
@@ -120,12 +132,6 @@
     padding:28px;text-align:center;
   }
   .load-card p{color:var(--muted);font-size:0.9rem;line-height:1.5;}
-  .drop-zone{
-    border:1.5px dashed var(--line);border-radius:8px;padding:26px;margin:18px 0;
-    cursor:pointer;transition:border-color .15s ease;
-  }
-  .drop-zone:hover, .drop-zone.dragover{border-color:var(--gold);}
-  .drop-zone span{color:var(--gold-soft);font-weight:700;}
   button.primary{
     background:linear-gradient(120deg,var(--gold),var(--rose));border:none;color:#1A1522;
     font-weight:700;padding:11px 22px;border-radius:8px;cursor:pointer;font-size:0.92rem;
@@ -152,7 +158,10 @@
   </header>
 
   <div id="metaRow" class="meta-row" style="display:none;">
-    <div><span class="season-tag" id="metaSeason"></span></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <select id="seasonPicker" onchange="onSeasonPickerChange()" style="background:var(--bg-panel-raised);border:1px solid var(--line);color:var(--gold-soft);border-radius:6px;padding:6px 10px;font-size:0.85rem;font-family:'Inter';font-weight:700;"></select>
+      <span id="metaStartDate" style="font-size:0.8rem;color:var(--muted);"></span>
+    </div>
     <div id="metaUpdated"></div>
   </div>
 
@@ -160,6 +169,7 @@
     <p>Looking for this week's standings&hellip;</p>
   </div>
 
+  <h2 id="standingsHeading" style="display:none;font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:0.03em;color:var(--gold-soft);margin:0 0 12px;">Standings</h2>
   <div id="standingsList"></div>
 
   <div class="card" id="progressionChartCard" style="display:none;margin-top:8px;">
@@ -168,11 +178,18 @@
     <div id="progressionLegend" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
   </div>
 
+  <div id="castTeamsSection" style="display:none;margin-top:24px;">
+    <h2 style="font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:0.03em;color:var(--gold-soft);margin:0 0 4px;">Cast &amp; Teams</h2>
+    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 14px;">Tap a team to see their full roster.</p>
+    <div id="castTeamsList"></div>
+  </div>
+
   <p class="footer-note" id="footerNote" style="display:none;">Read-only view &middot; scores are logged in the main Mirrorball Ledger app</p>
 </div>
 
 <script>
 let data = null;
+let selectedSeason = null;
 
 function fmtDate(iso){
   if(!iso) return "";
@@ -181,6 +198,13 @@ function fmtDate(iso){
     return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) +
       " at " + d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
   }catch(e){ return ""; }
+}
+function formatDisplayDate(isoDate){
+  if(!isoDate) return '';
+  const [y,m,d] = isoDate.split('-').map(Number);
+  if(!y||!m||!d) return '';
+  const dt = new Date(y, m-1, d);
+  return dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
 }
 
 function contrastText(hex){
@@ -191,15 +215,16 @@ function contrastText(hex){
   return luminance > 0.55 ? '#14121B' : '#F3EEE4';
 }
 
-function ownerById(id){ return data.owners.find(o=>o.id===id); }
-function categoryById(id){ return data.categories.find(c=>c.id===id); }
-function dancerById(id){ return data.dancers.find(d=>d.id===id); }
+function sd(){ return data.seasons[selectedSeason]; }
+function ownerById(id){ return sd().owners.find(o=>o.id===id); }
+function categoryById(id){ return sd().categories.find(c=>c.id===id); }
+function dancerById(id){ return sd().dancers.find(d=>d.id===id); }
 function ownersForDancer(dancerId){
-  return data.draft.filter(d=>d.dancerId===dancerId).map(d=>d.ownerId);
+  return sd().draft.filter(d=>d.dancerId===dancerId).map(d=>d.ownerId);
 }
 function allInstances(){
   const out = [];
-  (data.events||[]).forEach(ev=>{
+  (sd().events||[]).forEach(ev=>{
     const cat = categoryById(ev.categoryId);
     if(!cat) return;
     ev.instances.forEach(inst=>{
@@ -218,24 +243,45 @@ function ownerDisplayName(o){
   return o.teamName ? o.teamName : o.name;
 }
 
+function seasonOptionsList(){
+  return Object.keys(data.seasons).sort((a,b)=>{
+    const da = data.seasons[a].startDate || '';
+    const db = data.seasons[b].startDate || '';
+    if(da && db) return da < db ? -1 : (da > db ? 1 : 0);
+    if(da) return -1;
+    if(db) return 1;
+    return a.localeCompare(b, undefined, {numeric:true});
+  });
+}
+function populateSeasonPicker(){
+  const sel = document.getElementById('seasonPicker');
+  const opts = seasonOptionsList();
+  sel.innerHTML = opts.map(name=>`<option value="${name}">${name}</option>`).join('');
+  sel.value = selectedSeason;
+}
+function onSeasonPickerChange(){
+  selectedSeason = document.getElementById('seasonPicker').value;
+  renderLeaderboard();
+}
+
 function renderProgressionChart(){
   const card = document.getElementById('progressionChartCard');
   const wrap = document.getElementById('progressionChartWrap');
   const legend = document.getElementById('progressionLegend');
   if(!card) return;
 
-  if(!data.events || data.events.length===0 || !data.owners || data.owners.length===0){
+  if(!sd().events || sd().events.length===0 || !sd().owners || sd().owners.length===0){
     card.style.display = 'none';
     return;
   }
   card.style.display = 'block';
 
-  const maxWeek = Math.max(...data.events.map(e=>e.week));
+  const maxWeek = Math.max(...sd().events.map(e=>e.week));
   const weeks = [0];
   for(let w=1; w<=maxWeek; w++) weeks.push(w);
 
   const series = {};
-  data.owners.forEach(o=>{
+  sd().owners.forEach(o=>{
     series[o.id] = weeks.map(w=>{
       let total = 0;
       allInstances().forEach(i=>{
@@ -256,7 +302,7 @@ function renderProgressionChart(){
   const xFor = (idx) => ML + (weeks.length>1 ? idx/(weeks.length-1) : 0.5) * plotW;
   const yBase = (val) => MT + plotH - ((val - minVal) / ((maxVal - minVal)||1)) * plotH;
 
-  const n = data.owners.length;
+  const n = sd().owners.length;
   const staggerStep = 4.5;
   const yFor = (val, idx) => yBase(val) + (idx - (n-1)/2) * staggerStep;
 
@@ -283,7 +329,7 @@ function renderProgressionChart(){
   let lines = '';
   let endLabels = '';
   const lastIdx = weeks.length - 1;
-  data.owners.forEach((o, ownerIdx)=>{
+  sd().owners.forEach((o, ownerIdx)=>{
     const pts = series[o.id].map((v,idx)=>`${xFor(idx)},${yFor(v, ownerIdx)}`).join(' ');
     const color = o.color || '#D4AF37';
     lines += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.95" />`;
@@ -301,7 +347,7 @@ function renderProgressionChart(){
     ${gridLines}${xLabels}${lines}
   </svg>`;
 
-  legend.innerHTML = data.owners.map(o=>{
+  legend.innerHTML = sd().owners.map(o=>{
     const color = o.color || '#D4AF37';
     return `<span style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--muted);">
       <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;"></span>
@@ -310,21 +356,70 @@ function renderProgressionChart(){
   }).join('');
 }
 
+function dancersForOwner(ownerId){
+  return sd().draft.filter(d=>d.ownerId===ownerId).map(d=>dancerById(d.dancerId)).filter(Boolean);
+}
+function dancerPointTotal(dancerId){
+  return allInstances().filter(i=>i.dancerId===dancerId && i.enabled!==false).reduce((s,i)=>s+i.points,0);
+}
+function renderCastTeams(){
+  const section = document.getElementById('castTeamsSection');
+  const wrap = document.getElementById('castTeamsList');
+  if(!section || !wrap) return;
+  if(!sd().owners || sd().owners.length===0){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  wrap.innerHTML = sd().owners.map(o=>{
+    const dancers = dancersForOwner(o.id);
+    const rows = dancers.length
+      ? `<div class="dancer-grid" style="margin-top:2px;">${dancers.map(d=>{
+          const pts = dancerPointTotal(d.id);
+          const cls = pts>=0 ? 'pts-pos' : 'pts-neg';
+          return `<div class="dancer-row"><div class="dname">${d.name}<span class="pname">${d.partner}</span></div><div class="${cls}" style="font-size:0.85rem;white-space:nowrap;">${pts>0?'+':''}${pts} pts</div></div>`;
+        }).join('')}</div>`
+      : `<p class="empty-note">No dancers drafted yet.</p>`;
+    const sub = o.teamName ? `<div class="owner-name">${o.name}</div>` : '';
+    return `<div class="standing-card" id="cast-card-${o.id}">
+      <div class="standing-head" onclick="document.getElementById('cast-card-${o.id}').classList.toggle('open')">
+        <div class="standing-left">
+          <div>
+            <div class="team-name">${ownerDisplayName(o)}</div>
+            ${sub}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span style="color:var(--muted);font-size:0.85rem;">${dancers.length} dancer${dancers.length===1?'':'s'}</span>
+          <div class="chevron">&#9660;</div>
+        </div>
+      </div>
+      <div class="standing-detail">
+        ${rows}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderLeaderboard(){
   document.getElementById('loadState').style.display = 'none';
   document.getElementById('footerNote').style.display = 'block';
-  renderProgressionChart();
+  document.getElementById('standingsHeading').style.display = 'block';
 
   const metaRow = document.getElementById('metaRow');
   metaRow.style.display = 'flex';
-  document.getElementById('metaSeason').textContent = data.seasonName || 'This Season';
+  populateSeasonPicker();
+  document.getElementById('metaStartDate').textContent = sd().startDate ? formatDisplayDate(sd().startDate) : '';
   document.getElementById('metaUpdated').textContent = data.exportedAt ? ('Updated ' + fmtDate(data.exportedAt)) : '';
 
-  const rows = data.owners.map(o=>({owner:o,total:ownerTotal(o.id)})).sort((a,b)=>b.total-a.total);
+  renderProgressionChart();
+  renderCastTeams();
+
+  const rows = sd().owners.map(o=>({owner:o,total:ownerTotal(o.id)})).sort((a,b)=>b.total-a.total);
   const list = document.getElementById('standingsList');
   list.innerHTML = rows.map((r,idx)=>{
     const rankClass = idx===0 ? 'rank-1' : '';
-    const detail = allInstances().filter(i=>i.ownerId===r.owner.id && i.enabled!==false).sort((a,b)=>a.week-b.week);
+    const detail = allInstances().filter(i=>i.ownerId===r.owner.id && i.enabled!==false).sort((a,b)=>b.week-a.week);
     const detailRows = detail.length ? detail.map(i=>{
       const d = dancerById(i.dancerId);
       const cls = i.points>=0 ? 'pts-pos':'pts-neg';
@@ -354,6 +449,7 @@ function renderLeaderboard(){
         </div>
       </div>
       <div class="standing-detail">
+        <div class="scores-heading">Scores</div>
         <table class="breakdown">
           <thead><tr><th>Week</th><th>Category</th><th>Dancer / Celebrity</th><th>Pts</th></tr></thead>
           <tbody>${detailRows}</tbody>
@@ -365,46 +461,41 @@ function renderLeaderboard(){
 
 function showLoadPrompt(message){
   const box = document.getElementById('loadState');
-  box.innerHTML = `
-    <p>${message}</p>
-    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-      <span>Click to choose a file</span><br>or drag a backup JSON here
-    </div>
-    <input type="file" id="fileInput" accept=".json" style="display:none;">
-    <p style="font-size:0.78rem;">Export a backup from the main Mirrorball Ledger app, then load it here.</p>
-  `;
-  const dz = document.getElementById('dropZone');
-  const fi = document.getElementById('fileInput');
-  fi.addEventListener('change', e=>{ if(e.target.files[0]) loadFile(e.target.files[0]); });
-  dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', ()=> dz.classList.remove('dragover'));
-  dz.addEventListener('drop', e=>{
-    e.preventDefault(); dz.classList.remove('dragover');
-    if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
-  });
+  box.style.display = 'block';
+  box.innerHTML = `<p>${message}</p>`;
 }
 
-function loadFile(file){
-  const reader = new FileReader();
-  reader.onload = e=>{
-    try{
-      const parsed = JSON.parse(e.target.result);
-      if(!parsed.dancers || !parsed.owners){ throw new Error("bad shape"); }
-      data = parsed;
-      renderLeaderboard();
-    }catch(err){
-      showLoadPrompt("That file doesn't look like a Mirrorball Ledger export. Try exporting again from the main app.");
-    }
-  };
-  reader.readAsText(file);
+function normalizeLoadedData(parsed){
+  if(parsed.seasons && parsed.currentSeason){
+    return parsed;
+  }
+  if(parsed.dancers && parsed.owners){
+    // Legacy single-season export: wrap it into the multi-season shape.
+    const name = parsed.seasonName || 'Season';
+    const season = {
+      startDate: parsed.startDate || '',
+      dancers: parsed.dancers, owners: parsed.owners, draft: parsed.draft || [],
+      draftOrder: parsed.draftOrder || [], draftRules: parsed.draftRules || {orderSource:'manual', maxDraftCount:2},
+      categories: parsed.categories || [], events: parsed.events || []
+    };
+    return { currentSeason: name, seasons: { [name]: season }, exportedAt: parsed.exportedAt };
+  }
+  throw new Error("bad shape");
+}
+
+function handleLoadedData(parsed){
+  data = normalizeLoadedData(parsed);
+  const opts = seasonOptionsList();
+  selectedSeason = data.seasons[data.currentSeason] ? data.currentSeason : opts[opts.length-1];
+  renderLeaderboard();
 }
 
 /* Try to auto-load leaderboard-data.json sitting next to this page (works when hosted, e.g. GitHub Pages) */
 fetch('./leaderboard-data.json', {cache:'no-store'})
   .then(r=>{ if(!r.ok) throw new Error('not found'); return r.json(); })
-  .then(json=>{ data = json; renderLeaderboard(); })
+  .then(json=>{ handleLoadedData(json); })
   .catch(()=>{
-    showLoadPrompt("No leaderboard-data.json found next to this page yet.");
+    showLoadPrompt("No standings available yet — check back after the next update.");
   });
 </script>
 </body>

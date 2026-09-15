@@ -268,11 +268,12 @@
   }
   .toast.show{opacity:1;}
 
-  .cat-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+  .cat-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap;}
   .cat-row:last-child{border-bottom:none;}
-  .cat-row .cat-label{flex:1;font-size:0.88rem;}
+  .cat-row .cat-label{flex:1;font-size:0.88rem;min-width:120px;}
   .cat-row input[type=checkbox]{accent-color:var(--gold);width:16px;height:16px;}
   .cat-row input.pt-input{width:70px;text-align:right;}
+  .cat-row .onetime-toggle{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--muted);white-space:nowrap;}
   .footer-note{color:var(--muted);font-size:0.78rem;text-align:center;margin-top:36px;}
 </style>
 </head>
@@ -347,6 +348,25 @@
     <div id="weekRecapBox" style="display:none;"></div>
     <h2 class="section-title" style="margin-top:28px;">Logged this week</h2>
     <div id="thisWeekList"></div>
+
+    <h2 class="section-title" style="margin-top:32px;">Mark a Dancer Eliminated</h2>
+    <p class="section-sub">Purely a record for Cast &amp; Teams &mdash; doesn't affect scoring.</p>
+    <div class="card">
+      <div class="row" style="margin-bottom:0;">
+        <div>
+          <label for="elimWeek">Week</label>
+          <input type="number" id="elimWeek" min="1" value="1">
+        </div>
+        <div style="flex:2;">
+          <label for="elimDancer">Dancer</label>
+          <select id="elimDancer"></select>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="secondary" onclick="markEliminated()">Mark Eliminated</button>
+      </div>
+    </div>
+    <div id="eliminationsList" style="margin-top:12px;"></div>
   </section>
 
   <!-- ALL EVENTS -->
@@ -484,25 +504,25 @@ const DEFAULT_OWNERS = [
   {id:"o5",name:"Peter",color:"#B98FDB"}
 ];
 const DEFAULT_CATEGORIES = [
-  {id:"c1",label:"First 8",points:3,enabled:true},
-  {id:"c2",label:"First 9",points:5,enabled:true},
-  {id:"c3",label:"First 10",points:10,enabled:true},
-  {id:"c4",label:"First Straight 8s",points:10,enabled:true},
-  {id:"c5",label:"First Straight 9s",points:15,enabled:true},
-  {id:"c6",label:"First Perfect Score",points:20,enabled:true},
-  {id:"c7",label:"Overall 1st Place",points:75,enabled:true},
-  {id:"c8",label:"Overall 2nd Place",points:50,enabled:true},
-  {id:"c9",label:"Overall 3rd Place",points:25,enabled:true},
-  {id:"c10",label:"Overall 4th Place",points:15,enabled:true},
-  {id:"c11",label:"First Team to Lose a Dancer",points:2,enabled:true},
-  {id:"c12",label:"First Time your Dancer is Saved by a Judge",points:2,enabled:true},
-  {id:"c13",label:"Last Team to have all 4 Dancers",points:10,enabled:true},
-  {id:"c14",label:"Highest Total Score (weekly)",points:15,enabled:true},
-  {id:"c15",label:"2nd Highest Total Score (weekly)",points:10,enabled:true},
-  {id:"c16",label:"3rd Highest Total Score (weekly)",points:5,enabled:true},
-  {id:"c17",label:"Any Perfect Score After the 1st",points:5,enabled:true},
-  {id:"c18",label:"Weekly 1st Place",points:5,enabled:true},
-  {id:"c19",label:"Dancer or Pro gets COVID (penalty)",points:-5,enabled:true}
+  {id:"c1",label:"First 8",points:3,enabled:true,oneTimePerSeason:false},
+  {id:"c2",label:"First 9",points:5,enabled:true,oneTimePerSeason:false},
+  {id:"c3",label:"First 10",points:10,enabled:true,oneTimePerSeason:false},
+  {id:"c4",label:"First Straight 8s",points:10,enabled:true,oneTimePerSeason:false},
+  {id:"c5",label:"First Straight 9s",points:15,enabled:true,oneTimePerSeason:false},
+  {id:"c6",label:"First Perfect Score",points:20,enabled:true,oneTimePerSeason:false},
+  {id:"c7",label:"Overall 1st Place",points:75,enabled:true,oneTimePerSeason:false},
+  {id:"c8",label:"Overall 2nd Place",points:50,enabled:true,oneTimePerSeason:false},
+  {id:"c9",label:"Overall 3rd Place",points:25,enabled:true,oneTimePerSeason:false},
+  {id:"c10",label:"Overall 4th Place",points:15,enabled:true,oneTimePerSeason:false},
+  {id:"c11",label:"First Team to Lose a Dancer",points:2,enabled:true,oneTimePerSeason:false},
+  {id:"c12",label:"First Time your Dancer is Saved by a Judge",points:2,enabled:true,oneTimePerSeason:false},
+  {id:"c13",label:"Last Team to have all 4 Dancers",points:10,enabled:true,oneTimePerSeason:false},
+  {id:"c14",label:"Highest Total Score (weekly)",points:15,enabled:true,oneTimePerSeason:false},
+  {id:"c15",label:"2nd Highest Total Score (weekly)",points:10,enabled:true,oneTimePerSeason:false},
+  {id:"c16",label:"3rd Highest Total Score (weekly)",points:5,enabled:true,oneTimePerSeason:false},
+  {id:"c17",label:"Any Perfect Score After the 1st",points:5,enabled:true,oneTimePerSeason:false},
+  {id:"c18",label:"Weekly 1st Place",points:5,enabled:true,oneTimePerSeason:false},
+  {id:"c19",label:"Dancer or Pro gets COVID (penalty)",points:-5,enabled:true,oneTimePerSeason:false}
 ];
 
 /* ---------- DRAFT SETTINGS: definitions-driven, future-proof ----------
@@ -573,7 +593,8 @@ function blankSeason(){
     draft: [],
     draftSettings: Object.assign(defaultDraftSettings(), {order: DEFAULT_OWNERS.map(o=>o.id)}),
     categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-    events: []
+    events: [],
+    eliminations: []
   };
 }
 const DEFAULT_STATE = {
@@ -606,7 +627,9 @@ function normalizeSeason(s){
   delete s.draftRules;
 
   if(!Array.isArray(s.categories)) s.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+  s.categories.forEach(c=>{ if(c.oneTimePerSeason===undefined) c.oneTimePerSeason = false; });
   if(!Array.isArray(s.events)) s.events = [];
+  if(!Array.isArray(s.eliminations)) s.eliminations = [];
   return s;
 }
 
@@ -769,7 +792,8 @@ function switchToSeason(name){
       draft: [],
       draftSettings: Object.assign(mergeDraftSettings(clonedSettings), {order: clonedOwners.map(o=>o.id)}),
       categories: clonedCategories,
-      events: []
+      events: [],
+      eliminations: []
     };
     toast(`Started ${name} — owners and categories carried over, roster is blank`);
   }
@@ -864,7 +888,10 @@ function renderCastTeams(){
       ? `<div class="dancer-grid" style="margin-top:2px;">${dancers.map(d=>{
           const pts = dancerPointTotal(d.id);
           const cls = pts>=0 ? 'pts-pos' : 'pts-neg';
-          return `<div class="dancer-row"><div class="dname">${d.name}<span class="pname">${d.partner}</span></div><div class="${cls}" style="font-size:0.85rem;white-space:nowrap;">${pts>0?'+':''}${pts} pts</div></div>`;
+          const elim = eliminationFor(d.id);
+          const nameStyle = elim ? 'text-decoration:line-through;color:var(--muted);' : '';
+          const badge = elim ? `<span class="owner-badge" style="background:var(--rose);color:#fff;margin-left:6px;white-space:nowrap;">Eliminated Wk ${elim.week}</span>` : '';
+          return `<div class="dancer-row"><div class="dname" style="${nameStyle}">${d.name}${badge}<span class="pname">${d.partner}</span></div><div class="${cls}" style="font-size:0.85rem;white-space:nowrap;">${pts>0?'+':''}${pts} pts</div></div>`;
         }).join('')}</div>`
       : `<p class="empty-note">No dancers drafted yet.</p>`;
     const sub = o.teamName ? `<div class="owner-name">${o.name}</div>` : '';
@@ -1041,9 +1068,13 @@ function startDraft(){
 /* ---------- RENDER: LOG EVENT ---------- */
 function renderLogForm(){
   const catSel = document.getElementById('logCategory');
-  catSel.innerHTML = cs().categories.filter(c=>c.enabled!==false).map(c=>
-    `<option value="${c.id}">${c.label} (${c.points>0?'+':''}${c.points})</option>`
-  ).join('');
+  const keep = catSel.value;
+  catSel.innerHTML = cs().categories.filter(c=>c.enabled!==false).map(c=>{
+    const used = c.oneTimePerSeason && cs().events.some(ev=>ev.categoryId===c.id);
+    const mark = used ? '\u2713 ' : '';
+    return `<option value="${c.id}">${mark}${c.label} (${c.points>0?'+':''}${c.points})</option>`;
+  }).join('');
+  if(keep && cs().categories.some(c=>c.id===keep)) catSel.value = keep;
 
   renderDancerGrid();
   renderThisWeekList();
@@ -1108,11 +1139,10 @@ function checkDuplicateWarning(){
   const cat = categoryById(catId);
   const warnBox = document.getElementById('logWarn');
   if(!cat){ warnBox.innerHTML=""; return; }
-  const isFirstType = /^First /.test(cat.label);
-  if(isFirstType){
+  if(cat.oneTimePerSeason){
     const already = cs().events.some(ev=>ev.categoryId===catId);
     if(already){
-      warnBox.innerHTML = `<div class="warn">Heads up &mdash; "${cat.label}" has already been logged once this season. Since it's a "first" category, double check this isn't a duplicate.</div>`;
+      warnBox.innerHTML = `<div class="warn">Heads up &mdash; "${cat.label}" has already been logged once this season. Since it's marked once-per-season, double check this isn't a duplicate.</div>`;
       return;
     }
   }
@@ -1201,7 +1231,10 @@ function renderWeekRecap(week){
   const hadPriorWeeks = cs().events.some(e=>e.week<week);
   const leaderChanged = hadPriorWeeks && leaderNow && leaderPrev && leaderNow.id!==leaderPrev.id;
 
-  const firsts = [...new Set(weekInstances.filter(i=>/^First /.test(i.categoryLabel)).map(i=>i.categoryLabel))];
+  const firsts = [...new Set(weekInstances.filter(i=>{
+    const cat = categoryById(i.categoryId);
+    return cat && cat.oneTimePerSeason;
+  }).map(i=>i.categoryLabel))];
 
   let html = `<div class="card">
     <div style="font-weight:700;margin-bottom:10px;font-size:0.95rem;">Week ${week} Recap</div>
@@ -1226,6 +1259,67 @@ function renderWeekRecap(week){
   }
   html += `</div>`;
   box.innerHTML = html;
+}
+
+/* ---------- ELIMINATIONS ---------- */
+function eliminationFor(dancerId){
+  return cs().eliminations.find(e=>e.dancerId===dancerId) || null;
+}
+function eliminationOrderFor(dancerId){
+  const idx = cs().eliminations.findIndex(e=>e.dancerId===dancerId);
+  return idx>=0 ? idx+1 : null;
+}
+function renderEliminationDancerSelect(){
+  const sel = document.getElementById('elimDancer');
+  if(!sel) return;
+  const eliminatedIds = new Set(cs().eliminations.map(e=>e.dancerId));
+  const remaining = cs().dancers.filter(d=>!eliminatedIds.has(d.id));
+  if(remaining.length===0){
+    sel.innerHTML = `<option value="">No dancers left to eliminate</option>`;
+    sel.disabled = true;
+  }else{
+    sel.disabled = false;
+    sel.innerHTML = remaining.map(d=>`<option value="${d.id}">${d.name} / ${d.partner}</option>`).join('');
+  }
+}
+function markEliminated(){
+  const week = parseInt(document.getElementById('elimWeek').value,10) || 1;
+  const dancerId = document.getElementById('elimDancer').value;
+  if(!dancerId){
+    toast("No dancer selected");
+    return;
+  }
+  cs().eliminations.push({id: uid('el'), dancerId, week});
+  saveState();
+  renderAll();
+  toast("Marked eliminated");
+}
+function removeElimination(id){
+  cs().eliminations = cs().eliminations.filter(e=>e.id!==id);
+  saveState();
+  renderAll();
+}
+function renderEliminationsList(){
+  const wrap = document.getElementById('eliminationsList');
+  if(!wrap) return;
+  if(cs().eliminations.length===0){
+    wrap.innerHTML = `<p class="empty-note">Nobody's been eliminated yet this season.</p>`;
+    return;
+  }
+  wrap.innerHTML = cs().eliminations.map((e, idx)=>{
+    const d = dancerById(e.dancerId);
+    return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <strong>${d ? d.name : '?'}</strong> <span style="color:var(--muted);">/ ${d ? d.partner : '?'}</span><br>
+        <span style="color:var(--muted);font-size:0.82rem;">Week ${e.week} &middot; ${idx+1}${idx===0?'st':idx===1?'nd':idx===2?'rd':'th'} eliminated</span>
+      </div>
+      <button class="icon-btn" onclick="removeElimination('${e.id}')" title="Undo">&times;</button>
+    </div>`;
+  }).join('');
+}
+function renderEliminations(){
+  renderEliminationDancerSelect();
+  renderEliminationsList();
 }
 
 /* ---------- SCORE PROGRESSION CHART ---------- */
@@ -1570,14 +1664,21 @@ function renderCategories(){
   const list = document.getElementById('categoryList');
   list.innerHTML = cs().categories.map(c=>`
     <div class="cat-row">
-      <input type="checkbox" ${c.enabled!==false?'checked':''} onchange="toggleCategory('${c.id}', this.checked)">
-      <input type="text" class="cat-label" style="flex:1;background:none;border:none;color:var(--cream);font-size:0.88rem;" value="${c.label}" onchange="renameCategory('${c.id}', this.value)">
+      <input type="checkbox" ${c.enabled!==false?'checked':''} onchange="toggleCategory('${c.id}', this.checked)" title="Active this season">
+      <input type="text" class="cat-label" style="background:none;border:none;color:var(--cream);font-size:0.88rem;" value="${c.label}" onchange="renameCategory('${c.id}', this.value)">
       <input type="number" class="pt-input" value="${c.points}" onchange="repointCategory('${c.id}', this.value)">
+      <label class="onetime-toggle">
+        <input type="checkbox" ${c.oneTimePerSeason?'checked':''} onchange="toggleOneTime('${c.id}', this.checked)">
+        Once/season
+      </label>
     </div>
   `).join('');
 }
 function toggleCategory(id, checked){
   const c = categoryById(id); if(c){ c.enabled = checked; saveState(); renderAll(); }
+}
+function toggleOneTime(id, checked){
+  const c = categoryById(id); if(c){ c.oneTimePerSeason = checked; saveState(); renderAll(); }
 }
 function renameCategory(id, label){
   const c = categoryById(id); if(c){ c.label = label; saveState(); renderAll(); }
@@ -1589,7 +1690,7 @@ function addCategory(){
   const label = prompt("Category name:");
   if(!label) return;
   const points = parseFloat(prompt("Point value (use a negative number for penalties):","5")) || 0;
-  cs().categories.push({id:uid('c'), label, points, enabled:true});
+  cs().categories.push({id:uid('c'), label, points, enabled:true, oneTimePerSeason:false});
   saveState();
   renderAll();
 }
@@ -1676,6 +1777,7 @@ function renderAll(){
   renderProgressionChart();
   renderCastTeams();
   renderLogForm();
+  renderEliminations();
   renderAllEvents();
   renderSetup();
   ensureDraftOrderSync();

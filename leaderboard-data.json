@@ -283,7 +283,7 @@
           "label": "Last Team to have all 4 Dancers",
           "points": 10,
           "enabled": true,
-          "oneTimePerSeason": true
+          "oneTimePerSeason": false
         },
         {
           "id": "c14",
@@ -350,6 +350,17 @@
             }
           ],
           "note": "Conner Leavitt/Adele Zaikman"
+        },
+        {
+          "id": "e723r5vs",
+          "week": 1,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "dvq2ha4p"
+            }
+          ],
+          "note": "Maura Higgins/Mark Ballas"
         }
       ],
       "startDate": "2026-09-15",
@@ -367,8 +378,19 @@
           "o5"
         ]
       },
-      "eliminations": []
+      "eliminations": [
+        {
+          "id": "el0m233mk",
+          "dancerId": "d5fjv4eu",
+          "week": 1
+        },
+        {
+          "id": "eleqob852",
+          "dancerId": "dynn7lax",
+          "week": 1
+        }
+      ]
     }
   },
-  "exportedAt": "2026-09-16T02:02:29.435Z"
+  "exportedAt": "2026-09-17T02:22:39.160Z"
 }

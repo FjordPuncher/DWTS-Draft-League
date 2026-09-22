@@ -362,6 +362,9 @@ function dancersForOwner(ownerId){
 function dancerPointTotal(dancerId){
   return allInstances().filter(i=>i.dancerId===dancerId && i.enabled!==false).reduce((s,i)=>s+i.points,0);
 }
+function eliminationFor(dancerId){
+  return (sd().eliminations||[]).find(e=>e.dancerId===dancerId) || null;
+}
 function renderCastTeams(){
   const section = document.getElementById('castTeamsSection');
   const wrap = document.getElementById('castTeamsList');
@@ -373,11 +376,15 @@ function renderCastTeams(){
   section.style.display = 'block';
   wrap.innerHTML = sd().owners.map(o=>{
     const dancers = dancersForOwner(o.id);
+    const remaining = dancers.filter(d=>!eliminationFor(d.id)).length;
     const rows = dancers.length
       ? `<div class="dancer-grid" style="margin-top:2px;">${dancers.map(d=>{
           const pts = dancerPointTotal(d.id);
           const cls = pts>=0 ? 'pts-pos' : 'pts-neg';
-          return `<div class="dancer-row"><div class="dname">${d.name}<span class="pname">${d.partner}</span></div><div class="${cls}" style="font-size:0.85rem;white-space:nowrap;">${pts>0?'+':''}${pts} pts</div></div>`;
+          const elim = eliminationFor(d.id);
+          const nameStyle = elim ? 'text-decoration:line-through;color:var(--muted);' : '';
+          const badge = elim ? `<span class="owner-badge" style="background:var(--rose);color:#fff;margin-left:6px;white-space:nowrap;">Eliminated Wk ${elim.week}</span>` : '';
+          return `<div class="dancer-row"><div class="dname" style="${nameStyle}">${d.name}${badge}<span class="pname">${d.partner}</span></div><div class="${cls}" style="font-size:0.85rem;white-space:nowrap;">${pts>0?'+':''}${pts} pts</div></div>`;
         }).join('')}</div>`
       : `<p class="empty-note">No dancers drafted yet.</p>`;
     const sub = o.teamName ? `<div class="owner-name">${o.name}</div>` : '';
@@ -390,7 +397,7 @@ function renderCastTeams(){
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;">
-          <span style="color:var(--muted);font-size:0.85rem;">${dancers.length} dancer${dancers.length===1?'':'s'}</span>
+          <span style="color:var(--muted);font-size:0.85rem;">${remaining}/${dancers.length} dancers</span>
           <div class="chevron">&#9660;</div>
         </div>
       </div>
@@ -476,7 +483,7 @@ function normalizeLoadedData(parsed){
       startDate: parsed.startDate || '',
       dancers: parsed.dancers, owners: parsed.owners, draft: parsed.draft || [],
       draftOrder: parsed.draftOrder || [], draftRules: parsed.draftRules || {orderSource:'manual', maxDraftCount:2},
-      categories: parsed.categories || [], events: parsed.events || []
+      categories: parsed.categories || [], events: parsed.events || [], eliminations: parsed.eliminations || []
     };
     return { currentSeason: name, seasons: { [name]: season }, exportedAt: parsed.exportedAt };
   }

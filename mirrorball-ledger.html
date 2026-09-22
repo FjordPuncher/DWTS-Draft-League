@@ -884,6 +884,7 @@ function renderCastTeams(){
   }
   wrap.innerHTML = cs().owners.map(o=>{
     const dancers = dancersForOwner(o.id);
+    const remaining = dancers.filter(d=>!eliminationFor(d.id)).length;
     const rows = dancers.length
       ? `<div class="dancer-grid" style="margin-top:2px;">${dancers.map(d=>{
           const pts = dancerPointTotal(d.id);
@@ -904,7 +905,7 @@ function renderCastTeams(){
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;">
-          <span style="color:var(--muted);font-size:0.85rem;">${dancers.length} dancer${dancers.length===1?'':'s'}</span>
+          <span style="color:var(--muted);font-size:0.85rem;">${remaining}/${dancers.length} dancers</span>
           <div class="chevron">&#9660;</div>
         </div>
       </div>

@@ -361,6 +361,23 @@
             }
           ],
           "note": "Maura Higgins/Mark Ballas"
+        },
+        {
+          "id": "enm04ds3",
+          "week": 2,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            },
+            {
+              "dancerId": "dae6qmea"
+            },
+            {
+              "dancerId": "dc53z0u7"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov, Ezra Frech/Daniella Karagach, Jenna Dewan/Val Chmerkovskiy"
         }
       ],
       "startDate": "2026-09-15",
@@ -388,9 +405,14 @@
           "id": "eleqob852",
           "dancerId": "dynn7lax",
           "week": 1
+        },
+        {
+          "id": "el9ltc52l",
+          "dancerId": "d5lmu5nk",
+          "week": 2
         }
       ]
     }
   },
-  "exportedAt": "2026-09-17T02:22:39.160Z"
+  "exportedAt": "2026-09-23T02:02:04.347Z"
 }

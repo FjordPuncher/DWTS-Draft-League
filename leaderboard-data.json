@@ -378,6 +378,75 @@
             }
           ],
           "note": "Amber Glenn/Pasha Pashkov, Ezra Frech/Daniella Karagach, Jenna Dewan/Val Chmerkovskiy"
+        },
+        {
+          "id": "edfcaorc",
+          "week": 3,
+          "categoryId": "c1",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "e6c2078o",
+          "week": 3,
+          "categoryId": "c4",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "epa5v67i",
+          "week": 3,
+          "categoryId": "c4",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "espes9eu",
+          "week": 3,
+          "categoryId": "c1",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "es99qk5x",
+          "week": 3,
+          "categoryId": "c1",
+          "instances": [
+            {
+              "dancerId": "dvq2ha4p"
+            }
+          ],
+          "note": "Maura Higgins/Mark Ballas"
+        },
+        {
+          "id": "ei161ui8",
+          "week": 3,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            },
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson, Amber Glenn/Pasha Pashkov"
         }
       ],
       "startDate": "2026-09-15",
@@ -414,5 +483,5 @@
       ]
     }
   },
-  "exportedAt": "2026-09-23T02:02:04.347Z"
+  "exportedAt": "2026-10-01T03:13:12.055Z"
 }

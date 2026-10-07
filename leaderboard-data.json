@@ -447,6 +447,39 @@
             }
           ],
           "note": "Harry Shum Jr./Jenna Johnson, Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "eaj5qt0a",
+          "week": 4,
+          "categoryId": "c2",
+          "instances": [
+            {
+              "dancerId": "dvq2ha4p"
+            }
+          ],
+          "note": "Maura Higgins/Mark Ballas"
+        },
+        {
+          "id": "eo9juxip",
+          "week": 4,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "dvq2ha4p"
+            }
+          ],
+          "note": "Maura Higgins/Mark Ballas"
+        },
+        {
+          "id": "exzfo2xz",
+          "week": 4,
+          "categoryId": "c13",
+          "instances": [
+            {
+              "dancerId": "d4zse6j0"
+            }
+          ],
+          "note": "Guillermo Rodriguez/Witney Carson"
         }
       ],
       "startDate": "2026-09-15",
@@ -479,9 +512,19 @@
           "id": "el9ltc52l",
           "dancerId": "d5lmu5nk",
           "week": 2
+        },
+        {
+          "id": "el3rxiube",
+          "dancerId": "dul6ywtx",
+          "week": 3
+        },
+        {
+          "id": "elg5m3fqx",
+          "dancerId": "d8te96kh",
+          "week": 4
         }
       ]
     }
   },
-  "exportedAt": "2026-10-01T03:13:12.055Z"
+  "exportedAt": "2026-10-07T03:38:19.739Z"
 }

@@ -363,23 +363,6 @@
           "note": "Maura Higgins/Mark Ballas"
         },
         {
-          "id": "enm04ds3",
-          "week": 2,
-          "categoryId": "c18",
-          "instances": [
-            {
-              "dancerId": "devcs1x1"
-            },
-            {
-              "dancerId": "dae6qmea"
-            },
-            {
-              "dancerId": "dc53z0u7"
-            }
-          ],
-          "note": "Amber Glenn/Pasha Pashkov, Ezra Frech/Daniella Karagach, Jenna Dewan/Val Chmerkovskiy"
-        },
-        {
           "id": "edfcaorc",
           "week": 3,
           "categoryId": "c1",
@@ -480,6 +463,51 @@
             }
           ],
           "note": "Guillermo Rodriguez/Witney Carson"
+        },
+        {
+          "id": "egij7y2t",
+          "week": 5,
+          "categoryId": "c5",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            },
+            {
+              "dancerId": "dae6qmea"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy, Ezra Frech/Daniella Karagach"
+        },
+        {
+          "id": "e8yc2snx",
+          "week": 2,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            },
+            {
+              "dancerId": "devcs1x1"
+            },
+            {
+              "dancerId": "dae6qmea"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy, Amber Glenn/Pasha Pashkov, Ezra Frech/Daniella Karagach"
+        },
+        {
+          "id": "eq4jo4tu",
+          "week": 5,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            },
+            {
+              "dancerId": "dae6qmea"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy, Ezra Frech/Daniella Karagach"
         }
       ],
       "startDate": "2026-09-15",
@@ -526,5 +554,5 @@
       ]
     }
   },
-  "exportedAt": "2026-10-07T03:38:19.739Z"
+  "exportedAt": "2026-10-14T02:12:23.212Z"
 }

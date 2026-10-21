@@ -508,6 +508,61 @@
             }
           ],
           "note": "Jenna Dewan/Val Chmerkovskiy, Ezra Frech/Daniella Karagach"
+        },
+        {
+          "id": "eqweq87m",
+          "week": 6,
+          "categoryId": "c19",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            }
+          ],
+          "note": "Val Out from Bad Tweets"
+        },
+        {
+          "id": "ewgno925",
+          "week": 1,
+          "categoryId": "c3",
+          "instances": [
+            {
+              "dancerId": "dae6qmea"
+            }
+          ],
+          "note": "Ezra Frech/Daniella Karagach"
+        },
+        {
+          "id": "epxn5la4",
+          "week": 6,
+          "categoryId": "c3",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "er9lwvv4",
+          "week": 6,
+          "categoryId": "c3",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy"
+        },
+        {
+          "id": "evukgzce",
+          "week": 6,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
         }
       ],
       "startDate": "2026-09-15",
@@ -550,9 +605,14 @@
           "id": "elg5m3fqx",
           "dancerId": "d8te96kh",
           "week": 4
+        },
+        {
+          "id": "elh6la2le",
+          "dancerId": "d4zse6j0",
+          "week": 5
         }
       ]
     }
   },
-  "exportedAt": "2026-10-14T02:12:23.212Z"
+  "exportedAt": "2026-10-21T02:39:05.984Z"
 }

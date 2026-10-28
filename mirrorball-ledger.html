@@ -872,8 +872,24 @@ function toggleCard(ownerId){
 function dancersForOwner(ownerId){
   return cs().draft.filter(d=>d.ownerId===ownerId).map(d=>dancerById(d.dancerId)).filter(Boolean);
 }
+/* A dancer's total comes straight from the event log, NOT from
+   allInstances() — that list has one row per owner, so a dancer shared
+   by two teams would be counted twice here. Each team still gets full
+   credit for a shared dancer; this just reports what the dancer
+   themselves earned. */
+function dancerPointTotalFor(season, dancerId){
+  let total = 0;
+  season.events.forEach(ev=>{
+    const cat = season.categories.find(c=>c.id===ev.categoryId);
+    if(!cat || cat.enabled===false) return;
+    ev.instances.forEach(inst=>{
+      if(inst.dancerId===dancerId) total += cat.points;
+    });
+  });
+  return total;
+}
 function dancerPointTotal(dancerId){
-  return allInstances().filter(i=>i.dancerId===dancerId && i.enabled!==false).reduce((s,i)=>s+i.points,0);
+  return dancerPointTotalFor(cs(), dancerId);
 }
 function renderCastTeams(){
   const wrap = document.getElementById('castTeamsList');

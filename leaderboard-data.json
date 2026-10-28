@@ -563,6 +563,28 @@
             }
           ],
           "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "edzp0drh",
+          "week": 7,
+          "categoryId": "c6",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "ev17hg4n",
+          "week": 7,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
         }
       ],
       "startDate": "2026-09-15",
@@ -587,32 +609,42 @@
           "week": 1
         },
         {
-          "id": "eleqob852",
+          "id": "elww1cfwo",
           "dancerId": "dynn7lax",
-          "week": 1
-        },
-        {
-          "id": "el9ltc52l",
-          "dancerId": "d5lmu5nk",
           "week": 2
         },
         {
-          "id": "el3rxiube",
-          "dancerId": "dul6ywtx",
+          "id": "el328depv",
+          "dancerId": "d5lmu5nk",
           "week": 3
         },
         {
-          "id": "elg5m3fqx",
-          "dancerId": "d8te96kh",
+          "id": "elngg9k6b",
+          "dancerId": "dul6ywtx",
           "week": 4
         },
         {
-          "id": "elh6la2le",
-          "dancerId": "d4zse6j0",
+          "id": "elyl1mcse",
+          "dancerId": "d8te96kh",
           "week": 5
+        },
+        {
+          "id": "elclbl6yp",
+          "dancerId": "d4zse6j0",
+          "week": 6
+        },
+        {
+          "id": "elbqjl5ri",
+          "dancerId": "dfr0eq4f",
+          "week": 7
+        },
+        {
+          "id": "eltwrfnwc",
+          "dancerId": "dgcdpfaw",
+          "week": 7
         }
       ]
     }
   },
-  "exportedAt": "2026-10-21T02:39:05.984Z"
+  "exportedAt": "2026-10-28T02:52:52.524Z"
 }

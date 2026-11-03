@@ -585,6 +585,62 @@
             }
           ],
           "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "epmz7vzu",
+          "week": 8,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "el7pdfse",
+          "week": 8,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy"
+        },
+        {
+          "id": "e5eta45g",
+          "week": 8,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            },
+            {
+              "dancerId": "d90d9z03"
+            },
+            {
+              "dancerId": "dae6qmea"
+            },
+            {
+              "dancerId": "dc53z0u7"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson, Connor Wood/Rylee Arnold, Ezra Frech/Daniella Karagach, Jenna Dewan/Val Chmerkovskiy"
+        },
+        {
+          "id": "erh4658f",
+          "week": 8,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "dc53z0u7"
+            },
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Jenna Dewan/Val Chmerkovskiy, Harry Shum Jr./Jenna Johnson"
         }
       ],
       "startDate": "2026-09-15",
@@ -642,9 +698,14 @@
           "id": "eltwrfnwc",
           "dancerId": "dgcdpfaw",
           "week": 7
+        },
+        {
+          "id": "elcwej06m",
+          "dancerId": "d2ii8j2c",
+          "week": 8
         }
       ]
     }
   },
-  "exportedAt": "2026-10-28T02:52:52.524Z"
+  "exportedAt": "2026-11-03T03:03:06.040Z"
 }

@@ -641,6 +641,17 @@
             }
           ],
           "note": "Jenna Dewan/Val Chmerkovskiy, Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "eb55v4td",
+          "week": 9,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
         }
       ],
       "startDate": "2026-09-15",
@@ -703,9 +714,14 @@
           "id": "elcwej06m",
           "dancerId": "d2ii8j2c",
           "week": 8
+        },
+        {
+          "id": "elixqef60",
+          "dancerId": "dc53z0u7",
+          "week": 9
         }
       ]
     }
   },
-  "exportedAt": "2026-11-03T03:03:06.040Z"
+  "exportedAt": "2026-11-11T03:16:19.631Z"
 }

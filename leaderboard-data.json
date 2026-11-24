@@ -652,6 +652,86 @@
             }
           ],
           "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "ebq5ql09",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "epjicq8z",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "dvq2ha4p"
+            }
+          ],
+          "note": "Maura Higgins/Mark Ballas"
+        },
+        {
+          "id": "ew0zdeyu",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "ee9xc354",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson"
+        },
+        {
+          "id": "euonctug",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "dae6qmea"
+            }
+          ],
+          "note": "Ezra Frech/Daniella Karagach"
+        },
+        {
+          "id": "evjnhbmq",
+          "week": 10,
+          "categoryId": "c17",
+          "instances": [
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Amber Glenn/Pasha Pashkov"
+        },
+        {
+          "id": "e5avxfi7",
+          "week": 10,
+          "categoryId": "c18",
+          "instances": [
+            {
+              "dancerId": "duk78r6o"
+            },
+            {
+              "dancerId": "devcs1x1"
+            }
+          ],
+          "note": "Harry Shum Jr./Jenna Johnson, Amber Glenn/Pasha Pashkov"
         }
       ],
       "startDate": "2026-09-15",
@@ -719,9 +799,14 @@
           "id": "elixqef60",
           "dancerId": "dc53z0u7",
           "week": 9
+        },
+        {
+          "id": "elr1atgmd",
+          "dancerId": "duk78r6o",
+          "week": 10
         }
       ]
     }
   },
-  "exportedAt": "2026-11-11T03:16:19.631Z"
+  "exportedAt": "2026-11-24T12:54:22.896Z"
 }
